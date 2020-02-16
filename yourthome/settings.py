@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'home',
     'user',
     'whitenoise.runserver_nostatic',
+    'rest_framework_swagger',
 
 ]
 
