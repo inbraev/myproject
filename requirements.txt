@@ -1,5 +1,5 @@
 coverage==4.5.4
-Django==2.2.6
+Django==2.2.10
 djangorestframework==3.10.3
 model-mommy==2.0.0
 mpmath==1.1.0
