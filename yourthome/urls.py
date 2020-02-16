@@ -23,5 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
     path('', include('user.urls')),
-    path('',schema_view),
+    path('docs/',schema_view),
 ]
