@@ -26,7 +26,7 @@ urlpatterns = [
     path('', include('home.urls')),
     path('', include('user.urls')),
     path('', schema_view),
-    path('openapi/', get_schema_view(
+    path('openapi', get_schema_view(
         title="Yourthome",
         description="API for all things …"
     ), name='openapi-schema'),
