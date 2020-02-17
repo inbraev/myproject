@@ -21,7 +21,10 @@ class AddressSerializer(serializers.ModelSerializer):
         
 
 class AnnouncementSerializer(serializers.ModelSerializer):
-    address=AddressSerializer(many=False)
+    type = TypeSerializer()
+    address = AddressSerializer(many=False)
+    owner = UserSerializerInfo(many=)
+    image = ImageSerializer(many=True)
     
     class Meta:
         model = Apartment
