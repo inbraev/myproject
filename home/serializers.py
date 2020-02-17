@@ -23,7 +23,7 @@ class AddressSerializer(serializers.ModelSerializer):
 class AnnouncementSerializer(serializers.ModelSerializer):
     type = TypeSerializer()
     address = AddressSerializer(many=False)
-    owner = UserSerializerInfo(many=)
+    owner = UserSerializerInfo()
     image = ImageSerializer(many=True)
     
     class Meta:
