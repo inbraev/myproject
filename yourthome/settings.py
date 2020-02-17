@@ -36,9 +36,7 @@ INSTALLED_APPS = [
     'user',
     'whitenoise.runserver_nostatic',
 ]
-REST_FRAMEWORK = {
-  'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
-}
+
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
