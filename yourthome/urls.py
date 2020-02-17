@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls import url
 from rest_framework_swagger.views import get_swagger_view
+from rest_framework.schemas import get_schema_view
 
 
 schema_view = get_swagger_view(title='Pastebin API')
@@ -24,5 +25,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
     path('', include('user.urls')),
-    path('docs/',schema_view),
+    path('openapi', get_schema_view(
+        title="Yourthome",
+        description="API for all things …"
+    ), name='openapi-schema'),
 ]
