@@ -5,13 +5,13 @@ from .models import *
 class TypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Type
-        fields = ('id', 'name')
+        fields = ('name',)
 
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ('id', 'image',)
+        fields = ('image',)
 
         
 class AddressSerializer(serializers.ModelSerializer):
