@@ -27,7 +27,7 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, username, email, password, **extra_fields):
         if username is None:
-            raise TypeError('Users must have an email.')
+            raise TypeError('Users must have an username.')
         if password is None:
             raise TypeError('Superusers must have a password.')
 
@@ -46,15 +46,12 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField('Username', db_index=True, max_length=30, unique=True,
+    username = models.CharField('Username', max_length=30, unique=True,
                                 error_messages={
                                     'unique': "A user with that username already exists."
                                 }
                                 )
-    email = models.EmailField(
-        'Email Address', unique=True,
-        error_messages={'unique': "A user with that email already exists."}
-    )
+    email = models.EmailField('Email Address')
     name = models.CharField('Name', max_length=100, blank=True)
     surname = models.CharField('Surname', max_length=100, blank=True)
     phone = models.CharField('Phone number', max_length=100, blank=True)
@@ -66,7 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['name', 'surname', 'email']
+    REQUIRED_FIELDS = ['name', 'surname']
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -76,7 +73,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f'{self.name} {self.surname}'
 
     def __str__(self):
-        return f'{self.name} , {self.phone}'
+        return f'{self.name} {self.surname}'
 
     def _generate_jwt_token(self):
         dt = datetime.now() + timedelta(days=60)
