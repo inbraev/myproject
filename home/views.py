@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -52,5 +52,3 @@ class ApartmentsTypeView(generics.RetrieveAPIView):
         serializer = ApartmentSerializer(types, many=True)
         return Response(serializer.data)
 
-def hello (request):
-    return HttpResponse('<h1> HEllo </h1>')

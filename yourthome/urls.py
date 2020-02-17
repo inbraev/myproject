@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls import url
 from rest_framework_swagger.views import get_swagger_view
-from yourthome.home.views import hello
+
 
 schema_view = get_swagger_view(title='Pastebin API')
 urlpatterns = [
@@ -25,5 +25,4 @@ urlpatterns = [
     path('', include('home.urls')),
     path('', include('user.urls')),
     path('docs/',schema_view),
-    path('',hello),
 ]
