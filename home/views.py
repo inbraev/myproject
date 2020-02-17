@@ -51,4 +51,12 @@ class ApartmentsTypeView(generics.RetrieveAPIView):
         types = Apartment.objects.filter(type_id=instance.id)
         serializer = ApartmentSerializer(types, many=True)
         return Response(serializer.data)
+    
+    
+class AddressView(generics.CreateAPIView):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+    permission_classes = (permissions.IsAuthenticated, IsOwner)
+
+
 
