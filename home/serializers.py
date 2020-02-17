@@ -11,21 +11,31 @@ class TypeSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ('image',)
+        fields = ('id', 'image',)
 
+        
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = ('house_number', 'street', 'city', 'postcode', 'country', 'country_code')
+        
 
 class AnnouncementSerializer(serializers.ModelSerializer):
+    address=AddressSerializer(many=False)
+    
     class Meta:
         model = Apartment
         fields = (
-            'type', 'room', 'square', 'date_of_arrival', 'date_of_departure', 'price', 'description',
+            'type', 'room', 'square', 'address', 'date_of_arrival', 'date_of_departure', 'price', 'description',
             'status', 'pub_date', 'image', 'owner')
 
 
 class ApartmentSerializer(serializers.ModelSerializer):
+    address = AddressSerializer()
+    
     class Meta:
         model = Apartment
-        fields = ('type', 'room', 'square', 'date_of_arrival', 'date_of_departure', 'price', 'description',
+        fields = ('type', 'room', 'square', 'address', 'date_of_arrival', 'date_of_departure', 'price', 'description',
             'status', 'pub_date', 'image', 'owner', 'latitude', 'longitude')
 
 
