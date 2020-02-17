@@ -33,7 +33,7 @@ class Image(models.Model):
         verbose_name_plural = 'Фотографии'
 
     def __str__(self):
-        return str(self.image)
+        return self.image.name
 
 class Address(models.Model):
     house_number=models.IntegerField('Номер дома')
