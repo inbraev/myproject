@@ -42,6 +42,11 @@ class Address(models.Model):
     postcode = models.CharField('Почтовый индекс', max_length=10)
     country = models.CharField('Страна', max_length=20)
     country_code = models.CharField('Код страны', max_length=5)
+    
+    class Meta:
+        verbose_name = 'Адрес'
+        verbose_name_plural = 'Адреса'
+        
 
 
 class Apartment(models.Model):
