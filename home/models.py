@@ -55,7 +55,7 @@ class Apartment(models.Model):
     date_of_departure = models.DateField('Дата отбытия', help_text='гггг-мм-дд')
     description = models.TextField('Описание')
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
-    status = models.BooleanField('Свободно ли?')
+    status = models.BooleanField('Свободно ли?',default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='Владелец')
 
     class Meta:
