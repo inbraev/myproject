@@ -1,8 +1,10 @@
+from django.http import HttpResponse
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
 from .permissions import IsOwner
 from .serializers import *
+
 
 
 class TypeView(generics.ListAPIView):
@@ -49,3 +51,6 @@ class ApartmentsTypeView(generics.RetrieveAPIView):
         types = Apartment.objects.filter(type_id=instance.id)
         serializer = ApartmentSerializer(types, many=True)
         return Response(serializer.data)
+
+def hello (request):
+    return HttpResponse('<h1> HEllo </h1>')
