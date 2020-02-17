@@ -35,8 +35,6 @@ INSTALLED_APPS = [
     'home',
     'user',
     'whitenoise.runserver_nostatic',
-    'rest_framework_swagger',
-
 ]
 REST_FRAMEWORK = {
   'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
