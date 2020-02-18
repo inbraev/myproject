@@ -49,7 +49,7 @@ class Apartment(models.Model):
     date_of_departure = models.DateField('Дата отбытия', help_text='гггг-мм-дд')
     description = models.TextField('Описание')
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
-    status = models.BooleanField('Свободно ли?')
+    status = models.BooleanField('Свободно ли?', default=False)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Владелец')
 
     class Meta:
@@ -62,7 +62,7 @@ class Apartment(models.Model):
 
 class Image(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='photos/')
+    image = models.ImageField(upload_to='photos/', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Фотография'
