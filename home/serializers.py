@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import *
 
 
@@ -13,34 +14,6 @@ class ImageSerializer(serializers.ModelSerializer):
         model = Image
         fields = ('image',)
 
-        
-class AddressSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Address
-        fields = ('house_number', 'street', 'city', 'postcode', 'country', 'country_code')
-        
-
-class AnnouncementSerializer(serializers.ModelSerializer):
-    type = TypeSerializer()
-    address = AddressSerializer(many=False)
-    owner = UserSerializerInfo()
-    image = ImageSerializer(many=True)
-    
-    class Meta:
-        model = Apartment
-        fields = (
-            'type', 'room', 'square', 'address', 'date_of_arrival', 'date_of_departure', 'price', 'description',
-            'status', 'pub_date', 'image', 'owner')
-
-
-class ApartmentSerializer(serializers.ModelSerializer):
-    address = AddressSerializer()
-    
-    class Meta:
-        model = Apartment
-        fields = ('type', 'room', 'square', 'address', 'date_of_arrival', 'date_of_departure', 'price', 'description',
-            'status', 'pub_date', 'image', 'owner', 'latitude', 'longitude')
-
 
 class ApartmentsTypeSerializer(serializers.ModelSerializer):
     types = TypeSerializer(many=True)
@@ -49,3 +22,42 @@ class ApartmentsTypeSerializer(serializers.ModelSerializer):
         model = Apartment
         fields = ('types',)
 
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = ('house_number', 'street', 'city', 'postcode', 'country', 'country_code')
+
+
+class ApartmentSerializer(serializers.ModelSerializer):
+    address = AddressSerializer()
+    images = ImageSerializer(many=True)
+
+    class Meta:
+        model = Apartment
+        fields = (
+            'type', 'room', 'square', 'date_of_arrival', 'date_of_departure', 'price', 'description',
+            'status', 'pub_date', 'images', 'owner', 'latitude', 'longitude', 'address')
+
+    def create(self, validated_data):
+        address_data = validated_data.pop('address')
+        images_data = validated_data.pop('images')
+
+        address = Address.objects.create(**address_data)
+        apartment = Apartment.objects.create(address=address, **validated_data)
+
+        for image_data in images_data:
+            Image.objects.create(apartment=apartment, **image_data)
+        return apartment
+
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(source='type.__str__')
+    address = AddressSerializer(many=False)
+    owner = serializers.CharField(source='owner.__str__')
+    images = ImageSerializer(many=True)
+
+    class Meta:
+        model = Apartment
+        fields = ('type', 'room', 'address', 'square', 'date_of_arrival', 'date_of_departure', 'price', 'description',
+                  'status', 'pub_date', 'images', 'owner')
