@@ -1,7 +1,4 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from django.conf import settings
 
 
@@ -24,28 +21,20 @@ ROOM_CHOICES = [
 ]
 
 
-class Image(models.Model):
-    image = models.ImageField(upload_to='photos/')
-
-    class Meta:
-        verbose_name = 'Фотография'
-        verbose_name_plural = 'Фотографии'
-
-    def __str__(self):
-        return self.image.name
-
 class Address(models.Model):
-    house_number=models.IntegerField('Номер дома')
+    house_number = models.IntegerField('Номер дома')
     street = models.CharField('Улица', max_length=100)
     city = models.CharField('Город', max_length=100)
     postcode = models.CharField('Почтовый индекс', max_length=10)
     country = models.CharField('Страна', max_length=20)
     country_code = models.CharField('Код страны', max_length=5)
-    
+
+    def __str__(self):
+        return f'{self.city} , {self.street}, {self.house_number}'
+
     class Meta:
         verbose_name = 'Адрес'
         verbose_name_plural = 'Адреса'
-        
 
 
 class Apartment(models.Model):
@@ -54,15 +43,14 @@ class Apartment(models.Model):
     price = models.IntegerField('Цена')
     latitude = models.FloatField('Широта')
     longitude = models.FloatField('Долгота')
-    address = models.ForeignKey(Address, on_delete=models.CASCADE, verbose_name='Адрес', default=True)
+    address = models.OneToOneField(Address, on_delete=models.CASCADE, related_name='address')
     square = models.FloatField('Площадь')
-    image = models.ManyToManyField(Image, verbose_name='Фотографии', default=True)
     date_of_arrival = models.DateField('Дата прибытия', help_text='гггг-мм-дд')
     date_of_departure = models.DateField('Дата отбытия', help_text='гггг-мм-дд')
     description = models.TextField('Описание')
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
-    status = models.BooleanField('Свободно ли?',default=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='Владелец')
+    status = models.BooleanField('Свободно ли?')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Владелец')
 
     class Meta:
         verbose_name = 'Объект недвижимости'
@@ -70,3 +58,15 @@ class Apartment(models.Model):
 
     def __str__(self):
         return f'{self.type} , {self.room}'
+
+
+class Image(models.Model):
+    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='photos/')
+
+    class Meta:
+        verbose_name = 'Фотография'
+        verbose_name_plural = 'Фотографии'
+
+    def __str__(self):
+        return str(self.image)
