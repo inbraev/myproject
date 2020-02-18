@@ -6,13 +6,13 @@ from .models import *
 class TypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Type
-        fields = ('name',)
+        fields = ('id', 'name',)
 
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ('image',)
+        fields = ('id', 'image',)
 
 
 class ApartmentsTypeSerializer(serializers.ModelSerializer):
@@ -20,13 +20,13 @@ class ApartmentsTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ('types',)
+        fields = ('id', 'types',)
 
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = ('house_number', 'street', 'city', 'postcode', 'country', 'country_code')
+        fields = ('id', 'house_number', 'street', 'city', 'postcode', 'country', 'country_code')
 
 
 class ApartmentSerializer(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = (
-            'type', 'room', 'square', 'date_of_arrival', 'date_of_departure', 'price', 'description',
+            'id', 'type', 'room', 'square', 'date_of_arrival', 'date_of_departure', 'price', 'description',
             'status', 'pub_date', 'images', 'owner', 'latitude', 'longitude', 'address')
 
     def create(self, validated_data):
@@ -59,5 +59,5 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ('type', 'room', 'address', 'square', 'date_of_arrival', 'date_of_departure', 'price', 'description',
+        fields = ('id', 'type', 'room', 'address', 'square', 'date_of_arrival', 'date_of_departure', 'price', 'description',
                   'status', 'pub_date', 'images', 'owner')
