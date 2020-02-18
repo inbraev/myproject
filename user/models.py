@@ -73,7 +73,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f'{self.name} {self.surname}'
 
     def __str__(self):
-        return f'{self.name} {self.surname}'
+        return f'{self.name} {self.surname}, {self.phone}'
 
     def _generate_jwt_token(self):
         dt = datetime.now() + timedelta(days=60)
