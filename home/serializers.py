@@ -12,7 +12,7 @@ class TypeSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ('id', 'image',)
+        fields = ('id', 'image', 'apartment')
 
 
 class ApartmentsTypeSerializer(serializers.ModelSerializer):
@@ -60,4 +60,4 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = ('id', 'type', 'room', 'address', 'square', 'date_of_arrival', 'date_of_departure', 'price', 'description',
-                  'status', 'pub_date', 'images', 'owner')
+                  'status', 'latitude', 'longitude', 'pub_date', 'images', 'owner')
