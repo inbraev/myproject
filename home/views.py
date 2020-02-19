@@ -28,7 +28,7 @@ class AnnouncementView(generics.ListAPIView):
 class ApartmentView(generics.CreateAPIView):
     queryset = Apartment.objects.all()
     serializer_class = ApartmentSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     def perform_create(self, serializers):
         serializers.save(owner=self.request.user)
@@ -37,7 +37,7 @@ class ApartmentView(generics.CreateAPIView):
 class ApartmentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Apartment.objects.all()
     serializer_class = ApartmentSerializer
-    permission_classes = (permissions.IsAuthenticated, IsOwner)
+    permission_classes = (permissions.AllowAny,)
 
 
 class ApartmentsTypeView(generics.RetrieveAPIView):
