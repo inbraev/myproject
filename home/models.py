@@ -57,7 +57,7 @@ class Apartment(models.Model):
         verbose_name_plural = 'Объекты недвижимости'
 
     def __str__(self):
-        return f'{self.type} , {self.room}'
+        return f'{self.address} , {self.owner}'
 
 
 class Image(models.Model):
