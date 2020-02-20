@@ -10,13 +10,13 @@ from .serializers import *
 class TypeView(generics.ListAPIView):
     queryset = Type.objects.all()
     serializer_class = TypeSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.AllowAny,)
 
 
 class ImageView(generics.ListCreateAPIView):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
 
 class AnnouncementView(generics.ListAPIView):
@@ -56,12 +56,14 @@ class ApartmentsTypeView(generics.RetrieveAPIView):
 class AddressView(generics.CreateAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
-    permission_classes = (permissions.IsAuthenticated, IsOwner)
+    permission_classes = (permissions.AllowAny,)
     
     
 class ActiveApartmentView(generics.ListAPIView):
     queryset = Apartment.objects.filter(status=True)
     serializer_class = AnnouncementSerializer
+    permission_classes = (permissions.AllowAny,)
+    
 
 
 
