@@ -63,6 +63,6 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = ('id', 'type', 'room', 'floor', 'address', 'square', 'preview_image', 'date_of_arrival', 'date_of_departure',
-                  'price', 'description', 'status', 'pub_date', 'images', 'owner')
+                  'price', 'description', 'status', 'latitude', 'longitude', 'pub_date', 'images', 'owner')
 
 
