@@ -40,12 +40,13 @@ class Address(models.Model):
 class Apartment(models.Model):
     type = models.ForeignKey(Type, on_delete=models.CASCADE, verbose_name='Тип недвижимости')
     room = models.CharField('Количество комнат', max_length=10, choices=ROOM_CHOICES)
-#     floor = models.IntegerField('Этаж', default = 1)
+    floor = models.IntegerField('Этаж', default=1, blank=True, null=True)
     price = models.IntegerField('Цена')
     latitude = models.FloatField('Широта')
     longitude = models.FloatField('Долгота')
     address = models.OneToOneField(Address, on_delete=models.CASCADE, related_name='address')
     square = models.FloatField('Площадь')
+    preview_image = models.ImageField('Главное фото', upload_to='photos/', blank=True, null=True)
     date_of_arrival = models.DateField('Дата прибытия', help_text='гггг-мм-дд')
     date_of_departure = models.DateField('Дата отбытия', help_text='гггг-мм-дд')
     description = models.TextField('Описание')
@@ -58,12 +59,12 @@ class Apartment(models.Model):
         verbose_name_plural = 'Объекты недвижимости'
 
     def __str__(self):
-        return f'{self.address} , {self.owner}'
+        return f'{self.type} , {self.room}'
 
 
 class Image(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='photos/',blank=True, null=True)
+    image = models.ImageField(upload_to='photos/')
 
     class Meta:
         verbose_name = 'Фотография'
