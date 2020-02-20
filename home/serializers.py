@@ -10,9 +10,13 @@ class TypeSerializer(serializers.ModelSerializer):
 
 
 class ImageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(max_length=None, use_url=True, required=False)
     class Meta:
         model = Image
         fields = ('id', 'image', 'apartment')
+        
+        
+        
 
 
 class ApartmentsTypeSerializer(serializers.ModelSerializer):
