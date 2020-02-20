@@ -38,7 +38,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = (
-            'type', 'room', 'floor', 'square', 'preview_image', 'date_of_arrival', 'date_of_departure', 'price',
+            'id', 'type', 'room', 'floor', 'square', 'preview_image', 'date_of_arrival', 'date_of_departure', 'price',
             'description',
             'status', 'pub_date', 'images', 'owner', 'latitude', 'longitude', 'address')
 
@@ -62,7 +62,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ('type', 'room', 'floor', 'address', 'square', 'preview_image', 'date_of_arrival', 'date_of_departure',
+        fields = ('id', 'type', 'room', 'floor', 'address', 'square', 'preview_image', 'date_of_arrival', 'date_of_departure',
                   'price', 'description', 'status', 'pub_date', 'images', 'owner')
 
 
