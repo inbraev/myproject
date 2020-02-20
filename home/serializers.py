@@ -6,17 +6,15 @@ from .models import *
 class TypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Type
-        fields = ('id', 'name',)
+        fields = ('id', 'name')
 
 
 class ImageSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(max_length=None, use_url=True, required=False)
+    image = serializers.ImageField(max_length=None, required=False)
+
     class Meta:
         model = Image
         fields = ('id', 'image', 'apartment')
-        
-        
-        
 
 
 class ApartmentsTypeSerializer(serializers.ModelSerializer):
@@ -34,13 +32,16 @@ class AddressSerializer(serializers.ModelSerializer):
 
 
 class ApartmentSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(source='type.__str__')
+    owner = serializers.CharField(source='owner.__str__')
     address = AddressSerializer()
     images = ImageSerializer(many=True)
 
     class Meta:
         model = Apartment
         fields = (
-            'id', 'type', 'room', 'square', 'date_of_arrival', 'date_of_departure', 'price', 'description',
+            'type', 'room', 'floor', 'square', 'preview_image', 'date_of_arrival', 'date_of_departure', 'price',
+            'description',
             'status', 'pub_date', 'images', 'owner', 'latitude', 'longitude', 'address')
 
     def create(self, validated_data):
@@ -63,5 +64,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ('id', 'type', 'room', 'address', 'square', 'date_of_arrival', 'date_of_departure', 'price', 'description',
-                  'status', 'latitude', 'longitude', 'pub_date', 'images', 'owner')
+        fields = ('type', 'room', 'floor', 'address', 'square', 'preview_image', 'date_of_arrival', 'date_of_departure',
+                  'price', 'description', 'status', 'pub_date', 'images', 'owner')
+
+
