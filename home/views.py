@@ -57,6 +57,11 @@ class AddressView(generics.CreateAPIView):
     queryset = Address.objects.all()
     serializer_class = AddressSerializer
     permission_classes = (permissions.IsAuthenticated, IsOwner)
+    
+    
+class ActiveApartmentView(generics.ListAPIView):
+    queryset = Apartment.objects.filter(status=True)
+    serializer_class = AnnouncementSerializer
 
 
 
