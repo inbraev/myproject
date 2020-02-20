@@ -62,7 +62,7 @@ class Apartment(models.Model):
 
 class Image(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='photos/')
+    image = models.ImageField(upload_to='photos/',blank=True, null=True)
 
     class Meta:
         verbose_name = 'Фотография'
