@@ -40,7 +40,7 @@ class Address(models.Model):
 class Apartment(models.Model):
     type = models.ForeignKey(Type, on_delete=models.CASCADE, verbose_name='Тип недвижимости')
     room = models.CharField('Количество комнат', max_length=10, choices=ROOM_CHOICES)
-    floor = models.IntegerField('Этаж', default = 1)
+#     floor = models.IntegerField('Этаж', default = 1)
     price = models.IntegerField('Цена')
     latitude = models.FloatField('Широта')
     longitude = models.FloatField('Долгота')
