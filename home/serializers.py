@@ -32,7 +32,6 @@ class AddressSerializer(serializers.ModelSerializer):
 
 
 class ApartmentSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(source='type.__str__')
     owner = serializers.CharField(source='owner.__str__')
     address = AddressSerializer()
     images = ImageSerializer(many=True)
