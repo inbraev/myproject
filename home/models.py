@@ -131,7 +131,7 @@ class Location(models.Model):
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, verbose_name='Страна')
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, verbose_name='Регион')
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, verbose_name='Город')
-    district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True, verbose_name='Район')
+    district = models.ForeignKey(District, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='Район')
     street = models.CharField('Улица', max_length=100)
     house_number = models.IntegerField('Номер дома')
     latitude = models.FloatField('Широта')
@@ -152,9 +152,9 @@ class Detail(models.Model):
     electricity = models.BooleanField('Электричество')
     internet = models.BooleanField('Интернет')
     phone = models.BooleanField('Телевонная линия')
-    parking = models.BooleanField('Парковка')
-    elevator = models.BooleanField('Лифт')
-    security = models.BooleanField('Охрана')
+    parking = models.BooleanField('Парковка', blank=True, null=True)
+    elevator = models.BooleanField('Лифт', blank=True, null=True)
+    security = models.BooleanField('Охрана', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Характеристика'
@@ -197,8 +197,8 @@ class Rent(models.Model):
 class Contact(models.Model):
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, verbose_name='Тип арендодатора')
     phone = models.CharField('Номер телефона', max_length=13)
-    name = models.CharField('Имя', max_length=30)
-    surname = models.CharField('Фамилия', max_length=30)
+    name = models.CharField('Имя', max_length=30, blank=True, null=True)
+    surname = models.CharField('Фамилия', max_length=30, blank=True, null=True)
 
     class Meta:
         verbose_name = 'Контактные данные'
@@ -213,20 +213,21 @@ class Apartment(models.Model):
     room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, verbose_name='Количество комнат')
     floor = models.ForeignKey(Floor, on_delete=models.SET_NULL, null=True, verbose_name='Этаж')
     area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True, verbose_name='Площадь', related_name='area')
-    series = models.ForeignKey(Series, on_delete=models.SET_NULL, null=True, verbose_name='Серия')
+    series = models.ForeignKey(Series, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='Серия')
     construction_type = models.ForeignKey(Construction, on_delete=models.SET_NULL, null=True, verbose_name='Тип сторения')
     state = models.ForeignKey(State, on_delete=models.SET_NULL, null=True, verbose_name='Состояние')
     detail = models.ForeignKey(Detail, on_delete=models.SET_NULL, null=True, verbose_name='Характеристики', related_name='detail')
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, verbose_name='Расположение',
                                  related_name='location')
-    rental_period = models.ForeignKey(Rent, on_delete=models.SET_NULL, null=True, verbose_name='Период аренды')
+    rental_period = models.ForeignKey(Rent, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='Период аренды')
     price = models.FloatField('Цена')
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, verbose_name='Валюта')
     preview_image = models.ImageField('Главное фото', upload_to='photos/', blank=True, null=True)
-    description = models.TextField('Описание')
+    description = models.TextField('Описание', blank=True, null=True)
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
     contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True, verbose_name='Контактиные данные',
                                 related_name='contact')
+    # status = models.BooleanField('Статус объекта недвижимости', default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Владелец')
 
     class Meta:
@@ -238,7 +239,7 @@ class Apartment(models.Model):
 
 
 class Comment(models.Model):
-    apartment = models.ForeignKey(Apartment, on_delete=models.SET_NULL, null=True, verbose_name='Комментарии',
+    apartment = models.ForeignKey(Apartment, on_delete=models.SET_NULL, null=True, verbose_name='Объект недвижимости',
                                   related_name='comments')
     name_of_publication = models.CharField('Заголовок', max_length=100, default=' ', help_text='Введите заголовок')
     text_of_publication = models.TextField('Текст публикации', help_text='Введите текст')
