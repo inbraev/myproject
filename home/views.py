@@ -137,7 +137,7 @@ class ApartmentView(generics.CreateAPIView):
 class ApartmentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Apartment.objects.all()
     serializer_class = ApartmentSerializer
-    permission_classes = (permissions.IsAuthenticated, IsOwner)
+    permission_classes = (permissions.AllowAny,)
 
 
 class ApartmentListView(generics.ListAPIView):
