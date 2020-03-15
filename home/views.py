@@ -80,7 +80,7 @@ class LocationView(generics.CreateAPIView):
 class DetailView(generics.CreateAPIView):
     queryset = Detail.objects.all()
     serializer_class = DetailSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.AllowAny,)
 
 
 class CurrencyView(generics.ListCreateAPIView):
