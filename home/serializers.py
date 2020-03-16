@@ -139,7 +139,7 @@ class BookingSerializer(serializers.ModelSerializer):
 
 
 class ApartmentSerializer(serializers.ModelSerializer):
-    owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+    # owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
 
     location = LocationSerializer()
     images = ImageSerializer(many=True)
