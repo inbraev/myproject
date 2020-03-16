@@ -130,8 +130,8 @@ class ApartmentView(generics.CreateAPIView):
     serializer_class = ApartmentSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-#     def perform_create(self, serializer):
-#         return serializer.save(owner=self.request.user)
+    def perform_create(self, serializer):
+        return serializer.save(owner=self.request.user)
 
 
 class ApartmentDetail(generics.RetrieveUpdateDestroyAPIView):
