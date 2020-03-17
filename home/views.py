@@ -128,7 +128,7 @@ class ImageView(generics.ListCreateAPIView):
 class ApartmentView(generics.CreateAPIView):
     queryset = Apartment.objects.all()
     serializer_class = ApartmentSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
         return serializer.save(owner=self.request.user)
