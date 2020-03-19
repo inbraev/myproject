@@ -6,16 +6,12 @@ from .models import *
 
 class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
-        max_length=128,
-        min_length=8,
-        write_only=True
+        min_length=8, write_only=True, required=True, style={'input_type': 'password'}
     )
-
-    token = serializers.CharField(max_length=255, read_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'phone', 'name', 'surname', 'token']
+        fields = ['email', 'username', 'password', 'phone', 'name', 'surname']
 
     def create(self, validated_data):
         user = get_user_model().objects.create(
