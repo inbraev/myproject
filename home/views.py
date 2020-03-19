@@ -116,7 +116,7 @@ class CommentView(generics.ListCreateAPIView):
 class BookingView(generics.ListCreateAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class ImageView(generics.ListCreateAPIView):
@@ -156,4 +156,56 @@ class ApartmentsTypeView(generics.RetrieveAPIView):
         instance = self.get_object()
         types = Apartment.objects.filter(type_id=instance.id)
         serializer = ApartmentSerializer(types, many=True)
+        return Response(serializer.data)
+    
+    
+class RegionsView(generics.RetrieveAPIView):
+    model = Country
+    queryset = Country.objects.all()
+    permission_classes = (permissions.AllowAny,)
+    lookup_field = "pk"
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        regions = Region.objects.filter(country_id=instance.id)
+        serializer = RegionSerializer(regions, many=True)
+        return Response(serializer.data)
+
+
+class CitiesView(generics.RetrieveAPIView):
+    model = Region
+    queryset = Region.objects.all()
+    permission_classes = (permissions.AllowAny,)
+    lookup_field = "pk"
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        cities = City.objects.filter(region_id=instance.id)
+        serializer = CitySerializer(cities, many=True)
+        return Response(serializer.data)
+
+
+class DistrictsView(generics.RetrieveAPIView):
+    model = City
+    queryset = City.objects.all()
+    permission_classes = (permissions.AllowAny,)
+    lookup_field = "pk"
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        districts = District.objects.filter(city_id=instance.id)
+        serializer = DistrictSerializer(districts, many=True)
+        return Response(serializer.data)
+
+
+class ApartmentsRegionView(generics.RetrieveAPIView):
+    queryset = Region.objects.all()
+    permission_classes = (permissions.AllowAny,)
+    lookup_field = "pk"
+    serializer_class = ApartmentsRegionSerializer
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        regions = Apartment.objects.filter(location__region_id=instance.id)
+        serializer = ApartmentSerializer(regions, many=True)
         return Response(serializer.data)
