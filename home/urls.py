@@ -24,6 +24,8 @@ urlpatterns = [
     path('contacts/', views.ContactView().as_view()),
     path('comments/', views.CommentView().as_view()),
     path('orders/', views.BookingView().as_view()),
+    path('own-apartments/', views.OwnerView().as_view()),
+    path('own-apartment/<int:pk>/', views.OwnerBookingDetail().as_view()),
     path('images/', views.ImageView().as_view()),
     path('add/', views.ApartmentView().as_view()),
     path('apartment/<int:pk>/', views.ApartmentDetail().as_view()),
