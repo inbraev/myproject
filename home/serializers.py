@@ -205,5 +205,38 @@ class ApartmentsTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = ('id', 'types',)
+        
+        
+    
+class ApartmentsRegionSerializer(serializers.ModelSerializer):
+    location = RegionSerializer(many=True)
+
+    class Meta:
+        model = Apartment
+        fields = ('id', 'region')
+
+
+class RegionsSerializer(serializers.ModelSerializer):
+    regions = RegionSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Country
+        fields = ('id', 'regions',)
+
+
+class CitiesSerializer(serializers.ModelSerializer):
+    cities = CitySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Region
+        fields = ('id', 'cities',)
+
+
+class DistrictsSerializer(serializers.ModelSerializer):
+    districts = DistrictSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = City
+        fields = ('id', 'districts',)
 
 
