@@ -133,6 +133,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class BookingSerializer(serializers.ModelSerializer):
+    apartment = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = Booking
         fields = ('id', 'apartment', 'arrival_date', 'departure_date')
