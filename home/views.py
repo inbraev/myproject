@@ -3,7 +3,7 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from .permissions import IsOwner
 from .serializers import *
-
+from rest_framework.exceptions import PermissionDenied, NotFound
 
 class TypeView(generics.ListCreateAPIView):
     queryset = Type.objects.all()
@@ -209,3 +209,43 @@ class ApartmentsRegionView(generics.RetrieveAPIView):
         regions = Apartment.objects.filter(location__region_id=instance.id)
         serializer = ApartmentSerializer(regions, many=True)
         return Response(serializer.data)
+    
+
+class OwnerView(generics.ListAPIView):
+    queryset = Apartment.objects.all()
+    serializer_class = ApartmentSerializer
+    permission_classes = (IsOwner,)
+
+    def get_queryset(self):
+        user = self.request.user
+        return Apartment.objects.filter(owner=user)
+
+
+class OwnerBookingDetail(generics.ListCreateAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        try:
+            apartments = Apartment.objects.get(id=self.kwargs['pk'])
+            if user == apartments.owner:
+                serializer.save(apartment=apartments)
+            else:
+                raise PermissionDenied('У вас нету прав на изменение ')
+        except:
+            raise NotFound('Квартира не найдена')
+
+    def get_queryset(self):
+        user = self.request.user
+        pk = self.kwargs['pk']
+        try:
+            apartment = Apartment.objects.get(id=pk)
+            if user==apartment.owner:
+                return Booking.objects.filter(apartment__id=pk)
+            else:
+                raise PermissionDenied('У вас нету прав на изменение ')
+        except:
+            raise NotFound('Квартира не найдена')
