@@ -2,6 +2,7 @@ import os
 import dj_database_url
 import django_heroku
 from decouple import config,Csv
+from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -90,7 +91,10 @@ TEMPLATES = [
         },
     },
 ]
-
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=75),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=75),
+}
 WSGI_APPLICATION = 'yourthome.wsgi.application'
 
 # Database
