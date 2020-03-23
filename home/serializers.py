@@ -153,7 +153,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'construction_type', 'state',
-                  'detail', 'location', 'rental_period', 'price', 'currency', 'preview_image', 'description',
+                  'detail', 'location', 'rental_period', 'price', 'currency','another_price', 'preview_image', 'description',
                   'pub_date', 'images', 'contact', 'owner', 'comments', 'orders')
 
     def create(self, validated_data):
@@ -196,7 +196,7 @@ class ApartmentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'construction_type', 'state',
-                  'detail', 'location', 'rental_period', 'price', 'currency', 'preview_image', 'description',
+                  'detail', 'location', 'rental_period', 'price', 'currency','another_price', 'preview_image', 'description',
                   'pub_date', 'images', 'contact', 'owner', 'comments', 'orders')
 
 
