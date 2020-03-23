@@ -227,9 +227,26 @@ class Apartment(models.Model):
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
     contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True, verbose_name='Контактиные данные',
                                 related_name='contact')
+    another_price =  models.FloatField('Конвертированная цена',null=True,blank=True,default=0)
     # status = models.BooleanField('Статус объекта недвижимости', default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Владелец')
+    def save(self, *args,**kwargs):
+        import requests
+        from bs4 import BeautifulSoup
+        DOLLAR_SOM = 'https://www.akchabar.kg/ru/exchange-rates/dollar/'
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'}
+       
+        full_page = requests.get(DOLLAR_SOM, headers=headers)
+        soup = BeautifulSoup(full_page.content, 'html.parser')
+        convert = soup.findAll("h2")
+        if self.currency.name=="сом":
+            self.another_price=round(float(self.price)/float(convert[1].text),2)
+        else:
+            self.another_price=round(float(convert[1].text)*float(self.price),2)
 
+        super(Apartment, self).save(*args, **kwargs)   
+    
     class Meta:
         verbose_name = 'Объект недвижимости'
         verbose_name_plural = 'Объекты недвижимости'
