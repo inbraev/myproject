@@ -6,7 +6,7 @@ from .models import *
 class TypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Type
-        fields = ('id', 'name')
+        fields = ('id', 'type')
 
 
 class RoomSerializer(serializers.ModelSerializer):
