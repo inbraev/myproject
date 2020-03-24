@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'rest_framework_jwt',
     'home',
     'corsheaders',
+    'django_filters',
     'user',
     'whitenoise.runserver_nostatic',
 ]
