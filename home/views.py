@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from .permissions import IsOwner
 from .serializers import *
 from rest_framework.exceptions import PermissionDenied, NotFound
+from django_filters import rest_framework as filters
 
 class TypeView(generics.ListCreateAPIView):
     queryset = Type.objects.all()
@@ -139,10 +140,25 @@ class ApartmentDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ApartmentSerializer
     permission_classes = (permissions.AllowAny,)
 
+    
+class ApartmentFilter(filters.FilterSet):
+    min_price = filters.NumberFilter(field_name='price', lookup_expr='gte')
+    max_price = filters.NumberFilter(field_name='price', lookup_expr='lte')
+    arrival_date = filters.DateFilter(field_name='orders__arrival_date', lookup_expr='gte')
+    departure_date = filters.DateFilter(field_name='orders__departure_date', lookup_expr='lte')
 
+    class Meta:
+        model = Apartment
+        fields = ['location__region', 'location__city', 'type', 'room', 'floor', 'construction_type', 'state',
+                  'detail__internet', 'detail__furniture', 'min_price', 'max_price', 'currency', 'arrival_date',
+                  'departure_date']
+        
+        
 class ApartmentListView(generics.ListAPIView):
     serializer_class = ApartmentsSerializer
     queryset = Apartment.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ApartmentFilter
     permission_classes = (permissions.AllowAny,)
 
 
