@@ -112,6 +112,12 @@ class CommentView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (permissions.AllowAny,)
+    
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            return serializer.save(owner=self.request.user)
+        else:
+            raise PermissionDenied('Авторизуйтесь в системе для добавления комментариев')
 
 
 class BookingView(generics.ListCreateAPIView):
