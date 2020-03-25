@@ -295,4 +295,4 @@ class Booking(models.Model):
         verbose_name_plural = 'Система бронирования'
 
     def __str__(self):
-        return self.apartment
+        return f'{self.arrival_date} -- {self.departure_date}'
