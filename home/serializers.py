@@ -120,6 +120,7 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+    apartment = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = Comment
         fields = ('id', 'apartment', 'name_of_publication', 'text_of_publication', 'date_of_publication', 'owner')
