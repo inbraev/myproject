@@ -265,31 +265,31 @@ class OwnerView(generics.ListAPIView):
         return Apartment.objects.filter(owner=user)
 
 
-class OwnerBookingDetail(generics.ListCreateAPIView):
+class CreateBooking(generics.ListCreateAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
+    permission_classes = (IsOwner,)
 
     def perform_create(self, serializer):
-        user = self.request.user
         try:
-            apartments = Apartment.objects.get(id=self.kwargs['pk'])
-            if user == apartments.owner:
+            apartments = Apartment.objects.get(id=self.kwargs['id'])
+            if self.request.user == apartments.owner:
                 serializer.save(apartment=apartments)
             else:
-                raise PermissionDenied('У вас нету прав на изменение ')
+                raise PermissionDenied('Вы не являетесь собственником квартиры')
         except:
             raise NotFound('Квартира не найдена')
 
     def get_queryset(self):
-        user = self.request.user
-        pk = self.kwargs['pk']
         try:
-            apartment = Apartment.objects.get(id=pk)
-            if user==apartment.owner:
-                return Booking.objects.filter(apartment__id=pk)
+            apartment = Apartment.objects.get(id=self.kwargs['id'])
+            if self.request.user == apartment.owner:
+                return Booking.objects.filter(apartment__id=self.kwargs['id'])
             else:
                 raise PermissionDenied('У вас нету прав на изменение ')
         except:
             raise NotFound('Квартира не найдена')
+          
+class BookingDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
