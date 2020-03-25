@@ -209,6 +209,24 @@ class CitiesView(generics.RetrieveAPIView):
         cities = City.objects.filter(region_id=instance.id)
         serializer = CitySerializer(cities, many=True)
         return Response(serializer.data)
+    
+class CreateComment(generics.ListCreateAPIView):
+    def get_queryset(self):
+        queryset = Comment.objects.filter(apartment_id=self.kwargs["pk"])
+        return queryset
+    
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            try:
+                apartments = Apartment.objects.get(id=self.kwargs['pk'])
+                return serializer.save(owner=self.request.user,apartment=apartments)
+            except:
+                raise PermissionDenied("Квартира не найдена")
+        else:
+            raise PermissionDenied('Авторизуйтесь в системе для добавления комментариев')
+
+    serializer_class = CommentSerializer
+    permission_classes = (permissions.AllowAny,)
 
 
 class DistrictsView(generics.RetrieveAPIView):
