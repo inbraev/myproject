@@ -139,6 +139,11 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = ('id', 'apartment', 'arrival_date', 'departure_date')
+        
+    def validate(self, data):
+        if data['arrival_date'] > data['departure_date']:
+            raise serializers.ValidationError("Дата заезда не может быть позже даты выезда!!!")
+        return data
 
 
 class ApartmentSerializer(serializers.ModelSerializer):
