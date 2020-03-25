@@ -155,9 +155,11 @@ class ApartmentFilter(filters.FilterSet):
 
     class Meta:
         model = Apartment
-        fields = ['location__region', 'location__city', 'type', 'room', 'floor', 'construction_type', 'state',
-                  'detail__internet', 'detail__furniture', 'min_price', 'max_price', 'currency', 'arrival_date',
-                  'departure_date']
+        fields = ['location__region', 'location__city', 'location__district', 'type', 'room', 'floor',
+                  'construction_type', 'state',
+                  'min_price', 'max_price', 'currency', 'arrival_date', 'departure_date', 'min_area', 'max_area',
+                  'rental_period', 'detail__internet', 'detail__furniture', 'detail__heat', 'detail__gas',
+                  'detail__phone', 'detail__parking', 'detail__elevator', 'detail__security']
         
         
 class ApartmentListView(generics.ListAPIView):
