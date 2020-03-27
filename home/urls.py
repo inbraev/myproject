@@ -23,6 +23,7 @@ urlpatterns = [
     path('rents/', views.RentView().as_view()),
     path('contacts/', views.ContactView().as_view()),
     path('comments/', views.CommentView().as_view()),
+    path('comments/<int:pk>/', views.CommentDetail().as_view()),
     path('apartment/<int:pk>/comments/',views.CreateComment().as_view()),
     path('orders/', views.BookingView().as_view()),
     path('own-apartments/', views.OwnerView().as_view()),
