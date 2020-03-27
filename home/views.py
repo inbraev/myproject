@@ -155,8 +155,8 @@ class ApartmentDetail(generics.RetrieveUpdateDestroyAPIView):
 class ApartmentFilter(filters.FilterSet):
     min_price = filters.NumberFilter(field_name='price', lookup_expr='gte')
     max_price = filters.NumberFilter(field_name='price', lookup_expr='lte')
-    arrival_date = filters.DateFilter(field_name='orders__arrival_date', lookup_expr='gte')
-    departure_date = filters.DateFilter(field_name='orders__departure_date', lookup_expr='lte')
+    arrival_date = filters.DateFilter(field_name='orders__departure_date', lookup_expr='gt')
+    departure_date = filters.DateFilter(field_name='orders__arrival_date', lookup_expr='lt')
     min_area = filters.NumberFilter(field_name='area__total_area', lookup_expr='gte')
     max_area = filters.NumberFilter(field_name='area__total_area', lookup_expr='lte')
 
