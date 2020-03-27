@@ -228,7 +228,7 @@ class Apartment(models.Model):
     contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True, verbose_name='Контактиные данные',
                                 related_name='contact')
     another_price =  models.FloatField('Конвертированная цена',null=True,blank=True,default=0)
-    # status = models.BooleanField('Статус объекта недвижимости', default=True)
+    status = models.BooleanField('Статус объекта недвижимости', default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Владелец')
     def save(self, *args,**kwargs):
         import requests
