@@ -120,7 +120,11 @@ class CommentView(generics.ListCreateAPIView):
         else:
             raise PermissionDenied('Авторизуйтесь в системе для добавления комментариев')
 
-
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = (permissions.IsAdminUser,)
+   
 class BookingView(generics.ListCreateAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
