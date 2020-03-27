@@ -166,11 +166,21 @@ class ApartmentFilter(filters.FilterSet):
         
 class ApartmentListView(generics.ListAPIView):
     serializer_class = ApartmentsSerializer
-    queryset = Apartment.objects.all()
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ApartmentFilter
     permission_classes = (permissions.AllowAny,)
-
+    
+    def get_queryset(self):
+        for apartment in Apartment.objects.all():
+            if apartment.orders:
+                for order in apartment.orders.filter(departure_date__gte=date.today()):
+                    if date.today() == order.arrival_date:
+                        apartment.status = False
+                        apartment.save()
+                    if date.today() == order.departure_date:
+                        apartment.status = True
+                        apartment.save()
+        return Apartment.objects.filter(status=True)
 
 class ApartmentsTypeView(generics.RetrieveAPIView):
     model = Type
