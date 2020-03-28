@@ -308,3 +308,26 @@ class CreateBooking(generics.ListCreateAPIView):
 class BookingDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+class CreatePhotos(generics.ListCreateAPIView): 
+    serializer_class = ImageSerializer
+    permission_classes = (IsOwner,)
+
+    def perform_create(self, serializer):
+        try:
+            apartments = Apartment.objects.get(id=self.kwargs['id'])
+            if self.request.user == apartments.owner:
+                serializer.save(apartment=apartments)
+            else:
+                raise PermissionDenied('Вы не являетесь собственником квартиры')
+        except:
+            raise NotFound('Квартира не найдена')
+
+    def get_queryset(self):
+        try:
+            apartment = Apartment.objects.get(id=self.kwargs['id'])
+            if self.request.user == apartment.owner:
+                return Image.objects.filter(apartment__id=self.kwargs['id'])
+            else:
+                raise PermissionDenied('У вас нету прав на изменение ')
+        except:
+            raise NotFound('Квартира не найдена')
