@@ -27,6 +27,7 @@ urlpatterns = [
     path('apartment/<int:pk>/comments/',views.CreateComment().as_view()),
     path('orders/', views.BookingView().as_view()),
     path('own-apartments/', views.OwnerView().as_view()),
+    path('own-apartments/<int:id>/photo/', views.CreatePhotos().as_view()),
     path('own-apartments/<int:id>/booking/', views.CreateBooking().as_view()),
     path('own-apartments/<int:id>/booking/<int:pk>/', views.BookingDetail().as_view()),
     path('images/', views.ImageView().as_view()),
