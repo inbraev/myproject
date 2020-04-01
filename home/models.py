@@ -296,3 +296,16 @@ class Booking(models.Model):
 
     def __str__(self):
         return f'{self.arrival_date} -- {self.departure_date}'
+    
+    
+class Task(models.Model):
+    title = models.CharField(max_length=100, blank=False)
+
+
+    def save(self, *args, **kwargs):
+        super(Task, self).save(*args, **kwargs)
+
+class TaskImage(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    image = models.FileField(blank=True)
+
