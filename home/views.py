@@ -331,3 +331,6 @@ class CreatePhotos(generics.ListCreateAPIView):
                 raise PermissionDenied('У вас нету прав на изменение ')
         except:
             raise NotFound('Квартира не найдена')
+class Upload(generics.ListCreateAPIView):
+    serializer_class = TaskSerializer
+    queryset = Task.objects.all()
