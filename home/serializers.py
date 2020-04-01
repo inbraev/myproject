@@ -248,3 +248,22 @@ class DistrictsSerializer(serializers.ModelSerializer):
         fields = ('id', 'districts',)
 
 
+class TaskImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskImage
+        fields = ('image',)
+
+
+class TaskSerializer(serializers.HyperlinkedModelSerializer):
+    images = TaskImageSerializer(source='taskimage_set',  many=True, read_only=True)
+
+    class Meta:
+        model = Task
+        fields = ('id', 'title', 'images')
+
+    def create(self, validated_data):
+        images_data = self.context.get('view').request.FILES
+        task = Task.objects.create(title=validated_data.get('title', 'no-title'))
+        for image_data in images_data.values():
+            TaskImage.objects.create(task=task, image=image_data)
+        return task
