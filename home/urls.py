@@ -39,4 +39,5 @@ urlpatterns = [
     path('cities/<int:pk>/', views.CitiesView().as_view()),
     path('districts/<int:pk>/', views.DistrictsView().as_view()),
     path('ap-region/<int:pk>/', views.ApartmentsRegionView().as_view()),
+     path('hello/', views.Upload().as_view()),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
