@@ -186,7 +186,24 @@ class DistrictsSerializer(serializers.ModelSerializer):
         model = City
         fields = ('id', 'districts',)
         
-        
+class uploadSerializer(serializers.HyperlinkedModelSerializer):
+    images = ApartmentImageSerializer(source='apartment_image', many=True, read_only=True)
+
+    class Meta:
+        model = ApartmentImage
+        fields = ('images', 'image',)
+
+    def create(self, validated_data):
+        images_data = self.context.get('view').request.FILES
+        my_view = self.context['view']
+        object_id = my_view.kwargs.get('pk')
+        apartment = Apartment.objects.get(id=object_id)
+        for image_data in images_data.values():
+            ApartmentImage.objects.create(apartment=apartment, image=image_data)
+        apartment.save()
+        return apartment
+    
+    
 class ApartmentSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
 
