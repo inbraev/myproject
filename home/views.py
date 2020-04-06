@@ -270,7 +270,10 @@ class OwnerView(generics.ListAPIView):
     permission_classes = (IsOwner,)
 
     def get_queryset(self):
-        user = self.request.user
+        try:
+            user = self.request.user
+        exception:
+            raise PermissionDenied('Вы не являетесь собственником квартиры')
         return Apartment.objects.filter(owner=user)
 
 
