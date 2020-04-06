@@ -27,10 +27,9 @@ urlpatterns = [
     path('apartment/<int:pk>/comments/',views.CreateComment().as_view()),
     path('orders/', views.BookingView().as_view()),
     path('own-apartments/', views.OwnerView().as_view()),
-    path('own-apartments/<int:id>/photo/', views.CreatePhotos().as_view()),
+    path('own-apartments/<int:pk>/upload/', views.UploadImage().as_view()),
     path('own-apartments/<int:id>/booking/', views.CreateBooking().as_view()),
     path('own-apartments/<int:id>/booking/<int:pk>/', views.BookingDetail().as_view()),
-    path('images/', views.ImageView().as_view()),
     path('add/', views.ApartmentView().as_view()),
     path('apartment/<int:pk>/', views.ApartmentDetail().as_view()),
     path('apartments/', views.ApartmentListView().as_view()),
@@ -39,5 +38,5 @@ urlpatterns = [
     path('cities/<int:pk>/', views.CitiesView().as_view()),
     path('districts/<int:pk>/', views.DistrictsView().as_view()),
     path('ap-region/<int:pk>/', views.ApartmentsRegionView().as_view()),
-     path('hello/', views.Upload().as_view()),
+   
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
