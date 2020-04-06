@@ -271,17 +271,7 @@ class Comment(models.Model):
         return f'{self.name_of_publication} -- {self.date_of_publication}'
 
 
-class Image(models.Model):
-    apartment = models.ForeignKey(Apartment, on_delete=models.SET_NULL, null=True, verbose_name='Объект недвижимости',
-                                  related_name='images')
-    image = models.ImageField(upload_to='photos/', blank=True, null=True)
-
-    class Meta:
-        verbose_name = 'Фотография'
-        verbose_name_plural = 'Фотографии'
-
-    def __str__(self):
-        return str(self.image)
+ 
 
 
 class Booking(models.Model):
@@ -298,14 +288,10 @@ class Booking(models.Model):
         return f'{self.arrival_date} -- {self.departure_date}'
     
     
-class Task(models.Model):
-    title = models.CharField(max_length=100, blank=False)
+class ApartmentImage(models.Model):
+    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE,related_name='apartment_image')
+    image = models.FileField(blank=True,null=True)
 
-
-    def save(self, *args, **kwargs):
-        super(Task, self).save(*args, **kwargs)
-
-class TaskImage(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    image = models.FileField(blank=True)
+    def __str__(self):
+        return str(self.image)
 
