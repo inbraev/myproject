@@ -112,7 +112,6 @@ class RentSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Contact
         fields = ('id', 'role', 'phone', 'name', 'surname')
@@ -121,29 +120,33 @@ class ContactSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
     apartment = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Comment
         fields = ('id', 'apartment', 'name_of_publication', 'text_of_publication', 'date_of_publication', 'owner')
 
- 
 
 class BookingSerializer(serializers.ModelSerializer):
     apartment = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Booking
         fields = ('id', 'apartment', 'arrival_date', 'departure_date')
-        
+
     def validate(self, data):
         if data['arrival_date'] > data['departure_date']:
             raise serializers.ValidationError("Дата заезда не может быть позже даты выезда!!!")
         return data
-    
-    
+
+
 class ApartmentImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApartmentImage
         fields = ('image',)
-        
+class NewApartmentImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewApartmentImage
+        fields = ('image',)
 
 
 class ApartmentsTypeSerializer(serializers.ModelSerializer):
@@ -152,9 +155,8 @@ class ApartmentsTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = ('id', 'types',)
-        
-        
-    
+
+
 class ApartmentsRegionSerializer(serializers.ModelSerializer):
     location = RegionSerializer(many=True)
 
@@ -185,7 +187,8 @@ class DistrictsSerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = ('id', 'districts',)
-        
+
+
 class uploadSerializer(serializers.HyperlinkedModelSerializer):
     images = ApartmentImageSerializer(source='apartment_image', many=True, read_only=True)
 
@@ -202,8 +205,25 @@ class uploadSerializer(serializers.HyperlinkedModelSerializer):
             ApartmentImage.objects.create(apartment=apartment, image=image_data)
         apartment.save()
         return apartment
-    
-    
+
+class NewUploadSerializer(serializers.HyperlinkedModelSerializer):
+    images = NewApartmentImageSerializer(source='apartment_image', many=True, read_only=True)
+
+    class Meta:
+        model = NewApartmentImage
+        fields = ('images', 'image',)
+
+    def create(self, validated_data):
+        images_data = self.context.get('view').request.FILES
+        my_view = self.context['view']
+        object_id = my_view.kwargs.get('pk')
+        apartment = NewApartment.objects.get(id=object_id)
+        for image_data in images_data.values():
+            NewApartmentImage.objects.create(apartment=apartment, image=image_data)
+        apartment.save()
+        return apartment
+
+
 class ApartmentSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
 
@@ -218,19 +238,44 @@ class ApartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'construction_type', 'state',
-                  'detail', 'location', 'rental_period', 'price', 'currency','another_price', 'preview_image', 'description',
+                  'detail', 'location', 'rental_period', 'price', 'currency', 'another_price', 'preview_image',
+                  'description',
                   'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
 
     def create(self, validated_data):
-        location_data = validated_data.pop('location') 
+        location_data = validated_data.pop('location')
         area_data = validated_data.pop('area')
         contact_data = validated_data.pop('contact')
-        detail_data = validated_data.pop('detail') 
+        detail_data = validated_data.pop('detail')
         area = Area.objects.create(**area_data)
         location = Location.objects.create(**location_data)
         contact = Contact.objects.create(**contact_data)
-        detail = Detail.objects.create(**detail_data) 
-        apartment = Apartment.objects.create(area=area, location=location, detail=detail, contact=contact, **validated_data) 
+        detail = Detail.objects.create(**detail_data)
+        apartment = Apartment.objects.create(area=area, location=location, detail=detail, contact=contact,
+                                             **validated_data)
+        return apartment
+
+
+class NewApartmentSerializer(serializers.ModelSerializer):
+    owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+    apartment_image = NewUploadSerializer(many=True, read_only=True)
+    contact = ContactSerializer()
+    comments = CommentSerializer(many=True, read_only=True)
+    orders = BookingSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = NewApartment
+        fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'construction_type', 'state',
+                   'location', 'price', 'currency', 'another_price', 'preview_image',
+                  'description', 'title', 'furniture', 'heat', 'gas', 'electricity', 'internet', 'phone',
+                  'parking', 'elevator', 'security',
+                  'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
+
+    def create(self, validated_data):
+        contact_data = validated_data.pop('contact')
+        contact = Contact.objects.create(**contact_data)
+        apartment = Apartment.objects.create( contact=contact,
+                                             **validated_data)
         return apartment
 
 
@@ -255,11 +300,33 @@ class ApartmentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'construction_type', 'state',
-                  'detail', 'location', 'rental_period', 'price', 'currency','another_price', 'preview_image', 'description',
+                  'detail', 'location', 'rental_period', 'price', 'currency', 'another_price', 'preview_image',
+                  'description',
                   'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
 
 
- 
+class NewApartmentsSerializer(serializers.ModelSerializer):
+    owner = serializers.CharField(source='owner.__str__')
+
+    apartment_image = NewUploadSerializer(many=True, read_only=True)
+    contact = ContactSerializer(many=False)
+    type = serializers.CharField(source='type.__str__')
+
+    currency = serializers.CharField(source='currency.__str__')
+
+    series = serializers.CharField(source='series.__str__')
+    construction_type = serializers.CharField(source='construction_type.__str__')
+    state = serializers.CharField(source='state.__str__')
+
+    comments = CommentSerializer(many=True, read_only=True)
+    orders = BookingSerializer(many=True, read_only=True)
 
 
- 
+
+    class Meta:
+        model = NewApartment
+        fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'construction_type', 'state',
+                'location',   'price', 'currency', 'another_price', 'preview_image',
+                  'description','title','furniture', 'heat', 'gas', 'electricity', 'internet', 'phone',
+                  'parking', 'elevator', 'security',
+                  'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')

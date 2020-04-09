@@ -140,6 +140,14 @@ class ApartmentView(generics.CreateAPIView):
         return serializer.save(owner=self.request.user)
 
 
+class NewApartmentView(generics.CreateAPIView):
+    queryset = NewApartment.objects.all()
+    serializer_class = NewApartmentSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def perform_create(self, serializer):
+        return serializer.save(owner=self.request.user)
+
 class ApartmentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Apartment.objects.all()
     serializer_class = ApartmentSerializer
@@ -180,6 +188,25 @@ class ApartmentListView(generics.ListAPIView):
                         apartment.status = True
                         apartment.save()
         return Apartment.objects.filter(status=True)
+
+
+class NewApartmentListView(generics.ListAPIView):
+    serializer_class = NewApartmentsSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        for apartment in NewApartment.objects.all():
+            if apartment.orders:
+                for order in apartment.orders.filter(departure_date__gte=date.today()):
+                    if date.today() == order.arrival_date:
+                        apartment.status = False
+                        apartment.save()
+                    if date.today() == order.departure_date:
+                        apartment.status = True
+                        apartment.save()
+        return NewApartment.objects.filter(status=True)
+
 
 class ApartmentsTypeView(generics.RetrieveAPIView):
     model = Type
@@ -272,9 +299,10 @@ class OwnerView(generics.ListAPIView):
     def get_queryset(self):
         try:
             user = self.request.user
-        exception:
+            return Apartment.objects.filter(owner=user)
+        except:
             raise PermissionDenied('Вы не являетесь собственником квартиры')
-        return Apartment.objects.filter(owner=user)
+
 
 
 class CreateBooking(generics.ListCreateAPIView):
