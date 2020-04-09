@@ -343,7 +343,7 @@ class NewApartment(models.Model):
         else:
             self.another_price = round(float(convert[1].text) * float(self.price), 2)
 
-        super(Apartment, self).save(*args, **kwargs)
+        super(NewApartment, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Новая квартира'
