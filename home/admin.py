@@ -21,4 +21,7 @@ admin.site.register(Contact)
 admin.site.register(Comment)
 admin.site.register(Booking) 
 admin.site.register(Apartment)
+admin.site.register(NewApartment)
 admin.site.register(ApartmentImage)
+admin.site.register(NewApartmentImage)
+
