@@ -318,8 +318,7 @@ class NewApartmentsSerializer(serializers.ModelSerializer):
     construction_type = serializers.CharField(source='construction_type.__str__')
     state = serializers.CharField(source='state.__str__')
 
-    comments = CommentSerializer(many=True, read_only=True)
-    orders = BookingSerializer(many=True, read_only=True)
+
 
 
 
@@ -329,4 +328,4 @@ class NewApartmentsSerializer(serializers.ModelSerializer):
                 'location',   'price', 'currency', 'another_price', 'preview_image',
                   'description','title','furniture', 'heat', 'gas', 'electricity', 'internet', 'phone',
                   'parking', 'elevator', 'security',
-                  'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
+                  'pub_date', 'apartment_image', 'contact', 'owner',  )
