@@ -78,8 +78,8 @@ class LocationSerializer(serializers.ModelSerializer):
 class Location2Serializer(serializers.ModelSerializer):
     country = serializers.CharField(source='country.__str__')
     region = serializers.CharField(source='region.__str__')
-    city = serializers.CharField(source='city.__str__')
-    district = serializers.CharField(source='district.__str__')
+    city = serializers.CharField( )
+    district = serializers.CharField( )
 
     class Meta:
         model = Location
@@ -237,8 +237,8 @@ class ApartmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'construction_type', 'state',
-                  'detail', 'location', 'rental_period', 'price', 'currency', 'another_price', 'preview_image',
+        fields = ('id', 'type', 'room', 'floor', 'area', 'series','title', 'construction_type', 'state',
+                  'detail', 'location',  'price', 'currency', 'another_price', 'preview_image',
                   'description',
                   'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
 
@@ -285,9 +285,9 @@ class ApartmentsSerializer(serializers.ModelSerializer):
     apartment_image = uploadSerializer(many=True, read_only=True)
     contact = ContactSerializer(many=False)
     type = serializers.CharField(source='type.__str__')
-    room = serializers.CharField(source='room.__str__')
+    room = serializers.CharField( )
     currency = serializers.CharField(source='currency.__str__')
-    floor = serializers.CharField(source='floor.__str__')
+    floor = serializers.CharField( )
     series = serializers.CharField(source='series.__str__')
     construction_type = serializers.CharField(source='construction_type.__str__')
     state = serializers.CharField(source='state.__str__')
@@ -299,7 +299,7 @@ class ApartmentsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'construction_type', 'state',
+        fields = ('id', 'type', 'room','title', 'floor', 'area', 'series', 'construction_type', 'state',
                   'detail', 'location', 'rental_period', 'price', 'currency', 'another_price', 'preview_image',
                   'description',
                   'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')

@@ -130,8 +130,8 @@ class District(models.Model):
 class Location(models.Model):
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, verbose_name='Страна')
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, verbose_name='Регион')
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, verbose_name='Город')
-    district = models.ForeignKey(District, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='Район')
+    city = models.CharField(max_length=70,default="Бишкек", verbose_name='Город')
+    district = models.CharField( max_length=170,default="8 микрорайон", verbose_name='Район')
     street = models.CharField('Улица', max_length=100)
     house_number = models.IntegerField('Номер дома')
     latitude = models.FloatField('Широта')
@@ -210,8 +210,8 @@ class Contact(models.Model):
 
 class Apartment(models.Model):
     type = models.ForeignKey(Type, on_delete=models.SET_NULL, null=True, verbose_name='Тип недвижимости')
-    room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, verbose_name='Количество комнат')
-    floor = models.ForeignKey(Floor, on_delete=models.SET_NULL, null=True, verbose_name='Этаж')
+    room = models.PositiveSmallIntegerField(default=1,verbose_name='Количество комнат')
+    floor = models.PositiveSmallIntegerField(default=1, verbose_name='Этаж')
     area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True, verbose_name='Площадь', related_name='area')
     series = models.ForeignKey(Series, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='Серия')
     construction_type = models.ForeignKey(Construction, on_delete=models.SET_NULL, null=True,
@@ -224,6 +224,7 @@ class Apartment(models.Model):
     rental_period = models.ForeignKey(Rent, on_delete=models.SET_NULL, blank=True, null=True,
                                       verbose_name='Период аренды')
     price = models.FloatField('Цена')
+    title = models.CharField(max_length=150, verbose_name='Заголовок', null=True, blank=True)
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, verbose_name='Валюта')
     preview_image = models.ImageField('Главное фото', upload_to='photos/', blank=True, null=True)
     description = models.TextField('Описание', blank=True, null=True)
