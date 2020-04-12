@@ -97,10 +97,6 @@ class RoleView(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAdminUser,)
 
 
-class RentView(generics.ListCreateAPIView):
-    queryset = Rent.objects.all()
-    serializer_class = RentSerializer
-    permission_classes = (permissions.IsAdminUser,)
 
 
 class ContactView(generics.CreateAPIView):
@@ -140,13 +136,7 @@ class ApartmentView(generics.CreateAPIView):
         return serializer.save(owner=self.request.user)
 
 
-class NewApartmentView(generics.CreateAPIView):
-    queryset = NewApartment.objects.all()
-    serializer_class = NewApartmentSerializer
-    permission_classes = (permissions.IsAuthenticated,)
 
-    def perform_create(self, serializer):
-        return serializer.save(owner=self.request.user)
 
 class ApartmentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Apartment.objects.all()
@@ -167,7 +157,7 @@ class ApartmentFilter(filters.FilterSet):
         fields = ['location__region', 'location__city', 'location__district', 'type', 'room', 'floor',
                   'construction_type', 'state',
                   'min_price', 'max_price', 'currency', 'arrival_date', 'departure_date', 'min_area', 'max_area',
-                  'rental_period', 'detail__internet', 'detail__furniture', 'detail__heat', 'detail__gas',
+                   'detail__internet', 'detail__furniture', 'detail__heat', 'detail__gas',
                   'detail__phone', 'detail__parking', 'detail__elevator', 'detail__security']
         
         
@@ -188,24 +178,6 @@ class ApartmentListView(generics.ListAPIView):
                         apartment.status = True
                         apartment.save()
         return Apartment.objects.filter(status=True)
-
-
-class NewApartmentListView(generics.ListAPIView):
-    serializer_class = NewApartmentsSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    permission_classes = (permissions.AllowAny,)
-    queryset = NewApartment.objects.all()
-    # def get_queryset(self):
-    #     for apartment in NewApartment.objects.all():
-    #         if apartment.orders:
-    #             for order in apartment.orders.filter(departure_date__gte=date.today()):
-    #                 if date.today() == order.arrival_date:
-    #                     apartment.status = False
-    #                     apartment.save()
-    #                 if date.today() == order.departure_date:
-    #                     apartment.status = True
-    #                     apartment.save()
-    #     return NewApartment.objects.filter(status=True)
 
 
 class ApartmentsTypeView(generics.RetrieveAPIView):

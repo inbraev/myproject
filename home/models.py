@@ -183,15 +183,7 @@ class Role(models.Model):
         return self.name
 
 
-class Rent(models.Model):
-    name = models.CharField('Период аренды', max_length=100)
 
-    class Meta:
-        verbose_name = 'Период аренды'
-        verbose_name_plural = 'Периоды аренды'
-
-    def __str__(self):
-        return self.name
 
 
 class Contact(models.Model):
@@ -221,8 +213,7 @@ class Apartment(models.Model):
                                related_name='detail')
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, verbose_name='Расположение',
                                  related_name='location')
-    rental_period = models.ForeignKey(Rent, on_delete=models.SET_NULL, blank=True, null=True,
-                                      verbose_name='Период аренды')
+
     price = models.FloatField('Цена')
     title = models.CharField(max_length=150, verbose_name='Заголовок', null=True, blank=True)
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, verbose_name='Валюта')
@@ -298,65 +289,4 @@ class ApartmentImage(models.Model):
         return str(self.image)
 
 
-class NewApartment(models.Model):
-    type = models.ForeignKey(Type, on_delete=models.SET_NULL, null=True, verbose_name='Тип недвижимости')
-    room = models.PositiveSmallIntegerField(null=True, verbose_name='Количество комнат')
-    floor = models.PositiveSmallIntegerField(null=True, verbose_name='Этаж')
-    area = models.FloatField(null=True, verbose_name='Площадь')
-    series = models.ForeignKey(Series, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='Серия')
-    construction_type = models.ForeignKey(Construction, on_delete=models.SET_NULL, null=True,
-                                          verbose_name='Тип сторения')
-    state = models.ForeignKey(State, on_delete=models.SET_NULL, null=True, verbose_name='Состояние')
-    location = models.CharField(max_length=269, verbose_name='Расположение')
-    price = models.FloatField('Цена')
-    currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, verbose_name='Валюта')
-    preview_image = models.ImageField('Главное фото', upload_to='photos/', blank=True, null=True)
-    title = models.CharField(max_length=150)
-    description = models.TextField('Описание', blank=True, null=True)
-    pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
-    contact = models.ForeignKey(Contact, on_delete=models.SET_NULL, null=True, verbose_name='Контактиные данные',
-                                related_name='contact_new')
-    another_price = models.FloatField('Конвертированная цена', null=True, blank=True, default=0)
-    status = models.BooleanField('Статус объекта недвижимости', default=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Владелец')
-    furniture = models.BooleanField('Мебель', default=False)
-    heat = models.BooleanField('Отопление', default=False)
-    gas = models.BooleanField('Газ', default=False)
-    electricity = models.BooleanField('Электричество', default=False)
-    internet = models.BooleanField('Интернет', default=False)
-    phone = models.BooleanField('Телевонная линия', default=False)
-    parking = models.BooleanField('Парковка', blank=True, null=True, default=False)
-    elevator = models.BooleanField('Лифт', blank=True, null=True, default=False)
-    security = models.BooleanField('Охрана', blank=True, null=True, default=False)
 
-    def save(self, *args, **kwargs):
-        import requests
-        from bs4 import BeautifulSoup
-        DOLLAR_SOM = 'https://www.akchabar.kg/ru/exchange-rates/dollar/'
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'}
-
-        full_page = requests.get(DOLLAR_SOM, headers=headers)
-        soup = BeautifulSoup(full_page.content, 'html.parser')
-        convert = soup.findAll("h2")
-        if self.currency.name == "сом":
-            self.another_price = round(float(self.price) / float(convert[1].text), 2)
-        else:
-            self.another_price = round(float(convert[1].text) * float(self.price), 2)
-
-        super(NewApartment, self).save(*args, **kwargs)
-
-    class Meta:
-        verbose_name = 'Новая квартира'
-        verbose_name_plural = 'Новые квартиры'
-
-    def __str__(self):
-        return f'{self.location}'
-
-
-class NewApartmentImage(models.Model):
-    apartment = models.ForeignKey(NewApartment, on_delete=models.CASCADE, related_name='apartment_image')
-    image = models.FileField(blank=True, null=True)
-
-    def __str__(self):
-        return str(self.image)

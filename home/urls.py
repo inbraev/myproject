@@ -20,7 +20,6 @@ urlpatterns = [
     path('details/', views.DetailView().as_view()),
     path('currency/', views.CurrencyView().as_view()),
     path('roles/', views.RoleView().as_view()),
-    path('rents/', views.RentView().as_view()),
     path('contacts/', views.ContactView().as_view()),
     path('comments/', views.CommentView().as_view()),
     path('comments/<int:pk>/', views.CommentDetail().as_view()),
@@ -31,10 +30,10 @@ urlpatterns = [
     path('own-apartments/<int:id>/booking/', views.CreateBooking().as_view()),
     path('own-apartments/<int:id>/booking/<int:pk>/', views.BookingDetail().as_view()),
     path('add/', views.ApartmentView().as_view()),
-    path('add-new/', views.NewApartmentView().as_view()),
+
     path('apartment/<int:pk>/', views.ApartmentDetail().as_view()),
     path('apartments/', views.ApartmentListView().as_view()),
-    path('apartments-new/', views.NewApartmentListView().as_view()),
+
 
     path('ap-type/<int:pk>/', views.ApartmentsTypeView.as_view()),
     path('regions/<int:pk>/', views.RegionsView().as_view()),

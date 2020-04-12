@@ -16,12 +16,12 @@ admin.site.register(Location)
 admin.site.register(Detail)
 admin.site.register(Currency)
 admin.site.register(Role)
-admin.site.register(Rent)
+
 admin.site.register(Contact)
 admin.site.register(Comment)
 admin.site.register(Booking) 
 admin.site.register(Apartment)
-admin.site.register(NewApartment)
+
 admin.site.register(ApartmentImage)
-admin.site.register(NewApartmentImage)
+
 
