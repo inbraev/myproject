@@ -75,7 +75,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f'{self.name} {self.surname}'
 
     def __str__(self):
-        return f'{self.name} {self.surname}, {self.phone}'
+        #return f'{self.name} {self.surname}, {self.phone}'
+        return f'{self.username}'
 
     @property
     def token(self):
