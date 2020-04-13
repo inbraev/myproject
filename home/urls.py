@@ -9,6 +9,18 @@ urlpatterns = [
     path('rooms/', views.RoomView().as_view()),
     path('floors/', views.FloorView().as_view()),
     path('constructions/', views.ConstructionView().as_view()),
+    # frontend
+    path('front-types/', views.FrontTypeView().as_view()),
+    path('front-constructions/', views.FrontConstructionView().as_view()),
+    path('front-series/', views.FrontSeriesView().as_view()),
+    path('front-states/', views.FrontStateView().as_view()),
+    path('front-countries/', views.FrontCountryView().as_view()),
+    path('front-regions/', views.FrontRegionView().as_view()),
+    path('front-cities/', views.FrontCityView().as_view()),
+    path('front-currency/', views.FrontCurrencyView().as_view()),
+    # frontend
+
+
     path('series/', views.SeriesView().as_view()),
     path('states/', views.StateView().as_view()),
     path('areas/', views.AreaView().as_view()),

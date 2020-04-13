@@ -5,12 +5,63 @@ from .permissions import IsOwner
 from .serializers import *
 from rest_framework.exceptions import PermissionDenied, NotFound
 from django_filters import rest_framework as filters
-from datetime import date 
+from datetime import date
+
 
 class TypeView(generics.ListCreateAPIView):
     queryset = Type.objects.all()
     serializer_class = TypeSerializer
     permission_classes = (permissions.IsAdminUser,)
+
+
+# for frontend
+
+class FrontTypeView(generics.ListAPIView):
+    queryset = Type.objects.all()
+    serializer_class = TypeSerializer
+    permission_classes = (permissions.AllowAny,)
+
+
+class FrontConstructionView(generics.ListAPIView):
+    queryset = Construction.objects.all()
+    serializer_class = ConstructionSerializer
+    permission_classes = (permissions.AllowAny,)
+
+
+class FrontSeriesView(generics.ListAPIView):
+    queryset = Series.objects.all()
+    serializer_class = SeriesSerializer
+    permission_classes = (permissions.AllowAny,)
+
+
+class FrontStateView(generics.ListAPIView):
+    queryset = State.objects.all()
+    serializer_class = StateSerializer
+    permission_classes = (permissions.AllowAny,)
+
+
+class FrontCountryView(generics.ListAPIView):
+    queryset = Country.objects.all()
+    serializer_class = CountrySerializer
+    permission_classes = (permissions.AllowAny,)
+
+
+class FrontRegionView(generics.ListAPIView):
+    queryset = Region.objects.all()
+    serializer_class = RegionSerializer
+    permission_classes = (permissions.AllowAny,)
+
+
+class FrontCityView(generics.ListAPIView):
+    queryset = City.objects.all()
+    serializer_class = CitySerializer
+    permission_classes = (permissions.AllowAny,)
+
+
+class FrontCurrencyView(generics.ListAPIView):
+    queryset = Currency.objects.all()
+    serializer_class = CurrencySerializer
+    permission_classes = (permissions.AllowAny,)
 
 
 class RoomView(generics.ListCreateAPIView):
@@ -97,8 +148,6 @@ class RoleView(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAdminUser,)
 
 
-
-
 class ContactView(generics.CreateAPIView):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
@@ -109,18 +158,20 @@ class CommentView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (permissions.AllowAny,)
-    
+
     def perform_create(self, serializer):
         if self.request.user.is_authenticated:
             return serializer.save(owner=self.request.user)
         else:
             raise PermissionDenied('Авторизуйтесь в системе для добавления комментариев')
 
+
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (permissions.IsAdminUser,)
-   
+
+
 class BookingView(generics.ListCreateAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
@@ -136,14 +187,12 @@ class ApartmentView(generics.CreateAPIView):
         return serializer.save(owner=self.request.user)
 
 
-
-
 class ApartmentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Apartment.objects.all()
     serializer_class = ApartmentSerializer
     permission_classes = (permissions.AllowAny,)
 
-    
+
 class ApartmentFilter(filters.FilterSet):
     min_price = filters.NumberFilter(field_name='price', lookup_expr='gte')
     max_price = filters.NumberFilter(field_name='price', lookup_expr='lte')
@@ -157,16 +206,16 @@ class ApartmentFilter(filters.FilterSet):
         fields = ['location__region', 'location__city', 'location__district', 'type', 'room', 'floor',
                   'construction_type', 'state',
                   'min_price', 'max_price', 'currency', 'arrival_date', 'departure_date', 'min_area', 'max_area',
-                   'detail__internet', 'detail__furniture', 'detail__heat', 'detail__gas',
+                  'detail__internet', 'detail__furniture', 'detail__heat', 'detail__gas',
                   'detail__phone', 'detail__parking', 'detail__elevator', 'detail__security']
-        
-        
+
+
 class ApartmentListView(generics.ListAPIView):
     serializer_class = ApartmentsSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ApartmentFilter
     permission_classes = (permissions.AllowAny,)
-    
+
     def get_queryset(self):
         for apartment in Apartment.objects.all():
             if apartment.orders:
@@ -191,8 +240,8 @@ class ApartmentsTypeView(generics.RetrieveAPIView):
         types = Apartment.objects.filter(type_id=instance.id)
         serializer = ApartmentSerializer(types, many=True)
         return Response(serializer.data)
-    
-    
+
+
 class RegionsView(generics.RetrieveAPIView):
     model = Country
     queryset = Country.objects.all()
@@ -217,17 +266,18 @@ class CitiesView(generics.RetrieveAPIView):
         cities = City.objects.filter(region_id=instance.id)
         serializer = CitySerializer(cities, many=True)
         return Response(serializer.data)
-    
+
+
 class CreateComment(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Comment.objects.filter(apartment_id=self.kwargs["pk"])
         return queryset
-    
+
     def perform_create(self, serializer):
         if self.request.user.is_authenticated:
             try:
                 apartments = Apartment.objects.get(id=self.kwargs['pk'])
-                return serializer.save(owner=self.request.user,apartment=apartments)
+                return serializer.save(owner=self.request.user, apartment=apartments)
             except:
                 raise PermissionDenied("Квартира не найдена")
         else:
@@ -261,7 +311,7 @@ class ApartmentsRegionView(generics.RetrieveAPIView):
         regions = Apartment.objects.filter(location__region_id=instance.id)
         serializer = ApartmentSerializer(regions, many=True)
         return Response(serializer.data)
-    
+
 
 class OwnerView(generics.ListAPIView):
     queryset = Apartment.objects.all()
@@ -274,7 +324,6 @@ class OwnerView(generics.ListAPIView):
             return Apartment.objects.filter(owner=user)
         except:
             raise PermissionDenied('Вы не являетесь собственником квартиры')
-
 
 
 class CreateBooking(generics.ListCreateAPIView):
@@ -301,10 +350,12 @@ class CreateBooking(generics.ListCreateAPIView):
                 raise PermissionDenied('У вас нету прав на изменение ')
         except:
             raise NotFound('Квартира не найдена')
-          
+
+
 class BookingDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
+
 
 class UploadImage(generics.ListCreateAPIView):
     serializer_class = uploadSerializer
