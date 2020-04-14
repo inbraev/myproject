@@ -70,17 +70,14 @@ class DistrictSerializer(serializers.ModelSerializer):
 
 
 class LocationSerializer(serializers.ModelSerializer):
-    country = serializers.StringRelatedField()
-    region = serializers.StringRelatedField()
-
     class Meta:
         model = Location
         fields = ('id', 'country', 'region', 'city', 'district', 'street', 'house_number', 'latitude', 'longitude')
 
 
 class Location2Serializer(serializers.ModelSerializer):
-    country = serializers.CharField(source='country.__str__')
-    region = serializers.CharField(source='region.__str__')
+    country = serializers.StringRelatedField()
+    region = serializers.StringRelatedField()
     city = serializers.CharField()
     district = serializers.CharField()
 
@@ -209,7 +206,7 @@ class uploadSerializer(serializers.HyperlinkedModelSerializer):
 
 
 
-class ApartmentSerializer(serializers.ModelSerializer):
+class PrettyApartmentSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
     owner = serializers.StringRelatedField()
     type = serializers.StringRelatedField()
@@ -217,6 +214,24 @@ class ApartmentSerializer(serializers.ModelSerializer):
     construction_type = serializers.StringRelatedField()
     state = serializers.StringRelatedField()
     currency = serializers.StringRelatedField()
+    location = Location2Serializer()
+    apartment_image = uploadSerializer(many=True, read_only=True)
+    area = AreaSerializer()
+    contact = ContactSerializer()
+    detail = DetailSerializer()
+    comments = CommentSerializer(many=True, read_only=True)
+    orders = BookingSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Apartment
+        fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
+                  'detail', 'location', 'price', 'currency', 'another_price', 'preview_image',
+                  'description',
+                  'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
+
+
+class ApartmentSerializer(serializers.ModelSerializer):
+    owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
     location = LocationSerializer()
     apartment_image = uploadSerializer(many=True, read_only=True)
     area = AreaSerializer()
