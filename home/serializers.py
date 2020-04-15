@@ -1,5 +1,6 @@
 from rest_framework import serializers
-
+from taggit_serializer.serializers import (TagListSerializerField,
+                                           TaggitSerializer)
 from .models import *
 
 
@@ -105,8 +106,6 @@ class RoleSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-
-
 class ContactSerializer(serializers.ModelSerializer):
     role = serializers.StringRelatedField()
 
@@ -142,9 +141,6 @@ class ApartmentImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApartmentImage
         fields = ('image',)
-
-
-
 
 
 class ApartmentsTypeSerializer(serializers.ModelSerializer):
@@ -205,8 +201,7 @@ class uploadSerializer(serializers.HyperlinkedModelSerializer):
         return apartment
 
 
-
-class PrettyApartmentSerializer(serializers.ModelSerializer):
+class PrettyApartmentSerializer(TaggitSerializer, serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
     owner = serializers.StringRelatedField()
     type = serializers.StringRelatedField()
@@ -221,16 +216,18 @@ class PrettyApartmentSerializer(serializers.ModelSerializer):
     detail = DetailSerializer()
     comments = CommentSerializer(many=True, read_only=True)
     orders = BookingSerializer(many=True, read_only=True)
+    tags = TagListSerializerField()
 
     class Meta:
         model = Apartment
-        fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
+        fields = ('id', 'type', 'room','tags', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
                   'detail', 'location', 'price', 'currency', 'another_price', 'preview_image',
                   'description',
                   'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
 
 
 class ApartmentSerializer(serializers.ModelSerializer):
+    tags = TagListSerializerField()
     owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
     location = LocationSerializer()
     apartment_image = uploadSerializer(many=True, read_only=True)
@@ -242,7 +239,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
+        fields = ('id', 'type', 'room','tags', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
                   'detail', 'location', 'price', 'currency', 'another_price', 'preview_image',
                   'description',
                   'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
@@ -252,18 +249,22 @@ class ApartmentSerializer(serializers.ModelSerializer):
         area_data = validated_data.pop('area')
         contact_data = validated_data.pop('contact')
         detail_data = validated_data.pop('detail')
+        tags = validated_data.pop('tags')
         area = Area.objects.create(**area_data)
         location = Location.objects.create(**location_data)
         contact = Contact.objects.create(**contact_data)
         detail = Detail.objects.create(**detail_data)
         apartment = Apartment.objects.create(area=area, location=location, detail=detail, contact=contact,
                                              **validated_data)
+        apartment.tags.set(*tags)
         return apartment
 
 
 
 
-class ApartmentsSerializer(serializers.ModelSerializer):
+
+class ApartmentsSerializer(TaggitSerializer, serializers.ModelSerializer):
+    tags = TagListSerializerField()
     owner = serializers.CharField(source='owner.__str__')
     location = Location2Serializer(many=False)
     apartment_image = uploadSerializer(many=True, read_only=True)
@@ -283,7 +284,6 @@ class ApartmentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = ('id', 'type', 'room', 'title', 'floor', 'area', 'series', 'construction_type', 'state',
-                  'detail', 'location', 'price', 'currency', 'another_price', 'preview_image',
+                  'detail', 'location','tags', 'price', 'currency', 'another_price', 'preview_image',
                   'description',
                   'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
-

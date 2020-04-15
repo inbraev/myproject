@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django_filters',
     'user',
     'whitenoise.runserver_nostatic',
+    'taggit',
+    'taggit_serializer',
 ]
 
 

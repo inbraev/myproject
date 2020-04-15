@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+from taggit.managers import TaggableManager
 
 class Type(models.Model):
     type = models.CharField('Тип', max_length=100)
@@ -225,6 +225,8 @@ class Apartment(models.Model):
     another_price = models.FloatField('Конвертированная цена', null=True, blank=True, default=0)
     status = models.BooleanField('Статус объекта недвижимости', default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Владелец')
+    tags = TaggableManager(blank=True)
+
 
     def save(self, *args, **kwargs):
         try:
