@@ -133,7 +133,8 @@ class BookingSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data['arrival_date'] > data['departure_date']:
-            raise serializers.ValidationError("Дата заезда не может быть позже даты выезда!!!")
+            raise serializers.ValidationError("Дата заезда"
+                                              " не может быть позже даты выезда!!!")
         return data
 
 
@@ -220,10 +221,12 @@ class PrettyApartmentSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ('id', 'type', 'room','tags', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
-                  'detail', 'location', 'price', 'currency', 'another_price', 'preview_image',
-                  'description',
-                  'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
+        fields = (
+            'id', 'type', 'room', 'nearby_objects', 'tags', 'floor', 'area', 'series', 'title', 'construction_type',
+            'state',
+            'detail', 'objects_in_apartment', 'location', 'price', 'currency', 'another_price', 'preview_image',
+            'description',
+            'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
 
 
 class ApartmentSerializer(serializers.ModelSerializer):
@@ -239,10 +242,11 @@ class ApartmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ('id', 'type', 'room','tags', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
+        fields = ('id', 'type', 'room', 'tags', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
                   'detail', 'location', 'price', 'currency', 'another_price', 'preview_image',
                   'description',
-                  'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
+                  'pub_date', 'nearby_objects', 'objects_in_apartment', 'apartment_image', 'contact', 'owner',
+                  'comments', 'orders')
 
     def create(self, validated_data):
         location_data = validated_data.pop('location')
@@ -256,15 +260,14 @@ class ApartmentSerializer(serializers.ModelSerializer):
         detail = Detail.objects.create(**detail_data)
         apartment = Apartment.objects.create(area=area, location=location, detail=detail, contact=contact,
                                              **validated_data)
+
         apartment.tags.set(*tags)
         return apartment
 
 
-
-
-
 class ApartmentsSerializer(TaggitSerializer, serializers.ModelSerializer):
     tags = TagListSerializerField()
+
     owner = serializers.CharField(source='owner.__str__')
     location = Location2Serializer(many=False)
     apartment_image = uploadSerializer(many=True, read_only=True)
@@ -284,6 +287,6 @@ class ApartmentsSerializer(TaggitSerializer, serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = ('id', 'type', 'room', 'title', 'floor', 'area', 'series', 'construction_type', 'state',
-                  'detail', 'location','tags', 'price', 'currency', 'another_price', 'preview_image',
+                  'detail', 'nearby_objects', 'location', 'tags', 'price', 'currency', 'another_price', 'preview_image',
                   'description',
-                  'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
+                  'pub_date', 'apartment_image', 'objects_in_apartment', 'contact', 'owner', 'comments', 'orders')

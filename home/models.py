@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 from taggit.managers import TaggableManager
+from django.contrib.postgres.fields import ArrayField
+
 
 class Type(models.Model):
     type = models.CharField('Тип', max_length=100)
@@ -130,8 +132,8 @@ class District(models.Model):
 class Location(models.Model):
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, verbose_name='Страна')
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True, verbose_name='Регион')
-    city = models.CharField(max_length=70,default="Бишкек", verbose_name='Город')
-    district = models.CharField( max_length=170,default="8 микрорайон", verbose_name='Район')
+    city = models.CharField(max_length=70, default="Бишкек", verbose_name='Город')
+    district = models.CharField(max_length=170, default="8 микрорайон", verbose_name='Район')
     street = models.CharField('Улица', max_length=100)
     house_number = models.IntegerField('Номер дома')
     latitude = models.FloatField('Широта')
@@ -183,9 +185,6 @@ class Role(models.Model):
         return self.name
 
 
-
-
-
 class Contact(models.Model):
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, verbose_name='Тип арендодатора')
     phone = models.CharField('Номер телефона', max_length=13)
@@ -202,7 +201,7 @@ class Contact(models.Model):
 
 class Apartment(models.Model):
     type = models.ForeignKey(Type, on_delete=models.SET_NULL, null=True, verbose_name='Тип недвижимости')
-    room = models.PositiveSmallIntegerField(default=1,verbose_name='Количество комнат')
+    room = models.PositiveSmallIntegerField(default=1, verbose_name='Количество комнат')
     floor = models.PositiveSmallIntegerField(default=1, verbose_name='Этаж')
     area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True, verbose_name='Площадь', related_name='area')
     series = models.ForeignKey(Series, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='Серия')
@@ -226,7 +225,8 @@ class Apartment(models.Model):
     status = models.BooleanField('Статус объекта недвижимости', default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Владелец')
     tags = TaggableManager(blank=True)
-
+    nearby_objects = ArrayField(models.CharField(max_length=250, blank=True,null=True),null=True,blank=True ,default=list,verbose_name="Рядом есть")
+    objects_in_apartment = ArrayField(models.CharField(max_length=250, blank=True,null=True),null=True,blank=True , default=list,verbose_name="В квартире есть")
 
     def save(self, *args, **kwargs):
         try:
@@ -244,7 +244,7 @@ class Apartment(models.Model):
             else:
                 self.another_price = round(float(convert[1].text) * float(self.price), 2)
         except:
-            self.another_price=0
+            self.another_price = 0
         finally:
             super(Apartment, self).save(*args, **kwargs)
 
@@ -254,6 +254,9 @@ class Apartment(models.Model):
 
     def __str__(self):
         return f'{self.type} , {self.location}'
+
+
+
 
 
 class Comment(models.Model):
@@ -292,6 +295,3 @@ class ApartmentImage(models.Model):
 
     def __str__(self):
         return str(self.image)
-
-
-
