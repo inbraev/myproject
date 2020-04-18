@@ -1,97 +1,72 @@
-from rest_framework import generics
-from rest_framework import permissions
-from rest_framework.response import Response
-from .permissions import IsOwner
-from .serializers import *
-from rest_framework.exceptions import PermissionDenied, NotFound
-from django_filters import rest_framework as filters
 from datetime import date
 
+from django_filters import rest_framework as filters
+from rest_framework import generics
+from rest_framework import permissions
+from rest_framework.exceptions import PermissionDenied, NotFound
 
-class TypeView(generics.ListCreateAPIView):
-    queryset = Type.objects.all()
-    serializer_class = TypeSerializer
-    permission_classes = (permissions.IsAdminUser,)
+from .permissions import IsOwner
+from .serializers import *
 
 
-# for frontend
-
-class FrontTypeView(generics.ListAPIView):
+class TypeView(generics.ListAPIView):
     queryset = Type.objects.all()
     serializer_class = TypeSerializer
     permission_classes = (permissions.AllowAny,)
 
 
-class FrontConstructionView(generics.ListAPIView):
+class RoomView(generics.ListAPIView):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+    permission_classes = (permissions.AllowAny,)
+
+
+class FloorView(generics.ListAPIView):
+    queryset = Floor.objects.all()
+    serializer_class = FloorSerializer
+    permission_classes = (permissions.AllowAny,)
+
+
+class ConstructionView(generics.ListAPIView):
     queryset = Construction.objects.all()
     serializer_class = ConstructionSerializer
     permission_classes = (permissions.AllowAny,)
 
 
-class FrontSeriesView(generics.ListAPIView):
+class SeriesView(generics.ListAPIView):
     queryset = Series.objects.all()
     serializer_class = SeriesSerializer
     permission_classes = (permissions.AllowAny,)
 
 
-class FrontStateView(generics.ListAPIView):
+class StateView(generics.ListAPIView):
     queryset = State.objects.all()
     serializer_class = StateSerializer
     permission_classes = (permissions.AllowAny,)
 
 
-class FrontCountryView(generics.ListAPIView):
+class CountryView(generics.ListAPIView):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
     permission_classes = (permissions.AllowAny,)
 
 
-class FrontRegionView(generics.ListAPIView):
+class RegionView(generics.ListAPIView):
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
     permission_classes = (permissions.AllowAny,)
 
 
-class FrontCityView(generics.ListAPIView):
+class CityView(generics.ListAPIView):
     queryset = City.objects.all()
     serializer_class = CitySerializer
     permission_classes = (permissions.AllowAny,)
 
 
-class FrontCurrencyView(generics.ListAPIView):
-    queryset = Currency.objects.all()
-    serializer_class = CurrencySerializer
+class DistrictView(generics.ListAPIView):
+    queryset = District.objects.all()
+    serializer_class = DistrictSerializer
     permission_classes = (permissions.AllowAny,)
-
-
-class RoomView(generics.ListCreateAPIView):
-    queryset = Room.objects.all()
-    serializer_class = RoomSerializer
-    permission_classes = (permissions.IsAdminUser,)
-
-
-class FloorView(generics.ListCreateAPIView):
-    queryset = Floor.objects.all()
-    serializer_class = FloorSerializer
-    permission_classes = (permissions.IsAdminUser,)
-
-
-class ConstructionView(generics.ListCreateAPIView):
-    queryset = Construction.objects.all()
-    serializer_class = ConstructionSerializer
-    permission_classes = (permissions.IsAdminUser,)
-
-
-class SeriesView(generics.ListCreateAPIView):
-    queryset = Series.objects.all()
-    serializer_class = SeriesSerializer
-    permission_classes = (permissions.IsAdminUser,)
-
-
-class StateView(generics.ListCreateAPIView):
-    queryset = State.objects.all()
-    serializer_class = StateSerializer
-    permission_classes = (permissions.IsAdminUser,)
 
 
 class AreaView(generics.CreateAPIView):
@@ -100,28 +75,10 @@ class AreaView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
 
-class CountryView(generics.ListCreateAPIView):
-    queryset = Country.objects.all()
-    serializer_class = CountrySerializer
-    permission_classes = (permissions.IsAdminUser,)
-
-
-class RegionView(generics.ListCreateAPIView):
-    queryset = Region.objects.all()
-    serializer_class = RegionSerializer
-    permission_classes = (permissions.IsAdminUser,)
-
-
-class CityView(generics.ListCreateAPIView):
-    queryset = City.objects.all()
-    serializer_class = CitySerializer
-    permission_classes = (permissions.IsAdminUser,)
-
-
-class DistrictView(generics.ListCreateAPIView):
-    queryset = District.objects.all()
-    serializer_class = DistrictSerializer
-    permission_classes = (permissions.IsAdminUser,)
+class CurrencyView(generics.ListAPIView):
+    queryset = Currency.objects.all()
+    serializer_class = CurrencySerializer
+    permission_classes = (permissions.AllowAny,)
 
 
 class LocationView(generics.CreateAPIView):
@@ -136,16 +93,10 @@ class DetailView(generics.CreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
 
-class CurrencyView(generics.ListCreateAPIView):
-    queryset = Currency.objects.all()
-    serializer_class = CurrencySerializer
-    permission_classes = (permissions.IsAdminUser,)
-
-
-class RoleView(generics.ListCreateAPIView):
+class RoleView(generics.ListAPIView):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.AllowAny,)
 
 
 class ContactView(generics.CreateAPIView):
@@ -189,7 +140,7 @@ class ApartmentView(generics.CreateAPIView):
 
 class ApartmentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Apartment.objects.all()
-    serializer_class = PrettyApartmentSerializer
+    serializer_class = ApartmentSerializer
     permission_classes = (permissions.AllowAny,)
 
 
@@ -229,45 +180,6 @@ class ApartmentListView(generics.ListAPIView):
         return Apartment.objects.filter(status=True)
 
 
-class ApartmentsTypeView(generics.RetrieveAPIView):
-    model = Type
-    queryset = Type.objects.all()
-    permission_classes = (permissions.AllowAny,)
-    lookup_field = "pk"
-
-    def get(self, request, *args, **kwargs):
-        instance = self.get_object()
-        types = Apartment.objects.filter(type_id=instance.id)
-        serializer = ApartmentSerializer(types, many=True)
-        return Response(serializer.data)
-
-
-class RegionsView(generics.RetrieveAPIView):
-    model = Country
-    queryset = Country.objects.all()
-    permission_classes = (permissions.AllowAny,)
-    lookup_field = "pk"
-
-    def get(self, request, *args, **kwargs):
-        instance = self.get_object()
-        regions = Region.objects.filter(country_id=instance.id)
-        serializer = RegionSerializer(regions, many=True)
-        return Response(serializer.data)
-
-
-class CitiesView(generics.RetrieveAPIView):
-    model = Region
-    queryset = Region.objects.all()
-    permission_classes = (permissions.AllowAny,)
-    lookup_field = "pk"
-
-    def get(self, request, *args, **kwargs):
-        instance = self.get_object()
-        cities = City.objects.filter(region_id=instance.id)
-        serializer = CitySerializer(cities, many=True)
-        return Response(serializer.data)
-
-
 class CreateComment(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Comment.objects.filter(apartment_id=self.kwargs["pk"])
@@ -285,32 +197,6 @@ class CreateComment(generics.ListCreateAPIView):
 
     serializer_class = CommentSerializer
     permission_classes = (permissions.AllowAny,)
-
-
-class DistrictsView(generics.RetrieveAPIView):
-    model = City
-    queryset = City.objects.all()
-    permission_classes = (permissions.AllowAny,)
-    lookup_field = "pk"
-
-    def get(self, request, *args, **kwargs):
-        instance = self.get_object()
-        districts = District.objects.filter(city_id=instance.id)
-        serializer = DistrictSerializer(districts, many=True)
-        return Response(serializer.data)
-
-
-class ApartmentsRegionView(generics.RetrieveAPIView):
-    queryset = Region.objects.all()
-    permission_classes = (permissions.AllowAny,)
-    lookup_field = "pk"
-    serializer_class = ApartmentsRegionSerializer
-
-    def get(self, request, *args, **kwargs):
-        instance = self.get_object()
-        regions = Apartment.objects.filter(location__region_id=instance.id)
-        serializer = ApartmentSerializer(regions, many=True)
-        return Response(serializer.data)
 
 
 class OwnerView(generics.ListAPIView):
