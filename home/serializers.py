@@ -144,46 +144,6 @@ class ApartmentImageSerializer(serializers.ModelSerializer):
         fields = ('image',)
 
 
-class ApartmentsTypeSerializer(serializers.ModelSerializer):
-    types = TypeSerializer(many=True)
-
-    class Meta:
-        model = Apartment
-        fields = ('id', 'types',)
-
-
-class ApartmentsRegionSerializer(serializers.ModelSerializer):
-    location = RegionSerializer(many=True)
-
-    class Meta:
-        model = Apartment
-        fields = ('id', 'region')
-
-
-class RegionsSerializer(serializers.ModelSerializer):
-    regions = RegionSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Country
-        fields = ('id', 'regions',)
-
-
-class CitiesSerializer(serializers.ModelSerializer):
-    cities = CitySerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Region
-        fields = ('id', 'cities',)
-
-
-class DistrictsSerializer(serializers.ModelSerializer):
-    districts = DistrictSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = City
-        fields = ('id', 'districts',)
-
-
 class uploadSerializer(serializers.HyperlinkedModelSerializer):
     images = ApartmentImageSerializer(source='apartment_image', many=True, read_only=True)
 
