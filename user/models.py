@@ -48,19 +48,19 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField('Username', db_index=True, max_length=30, unique=True,
+    username = models.CharField('Логин', db_index=True, max_length=30, unique=True,
                                 error_messages={
                                     'unique': "A user with that username already exists."
                                 }
                                 )
-    email = models.EmailField('Email Address', db_index=True)
-    name = models.CharField('Name', max_length=100, blank=True)
-    surname = models.CharField('Surname', max_length=100, blank=True)
-    phone = models.CharField('Phone number', max_length=100, blank=True)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    date_of_add = models.DateTimeField('Registration', auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    email = models.EmailField('Адрес электронной почты', db_index=True)
+    name = models.CharField('Имя', max_length=100, blank=True)
+    surname = models.CharField('Фамилия', max_length=100, blank=True)
+    phone = models.CharField('Номер телефона', max_length=100, blank=True)
+    is_active = models.BooleanField('Статус', default=True)
+    is_staff = models.BooleanField('Персонал', default=False)
+    date_of_add = models.DateTimeField('Дата регистрации', auto_now_add=True)
+    updated_at = models.DateTimeField('Дата изменения', auto_now=True)
 
     objects = UserManager()
 
@@ -71,12 +71,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
-    def get_full_name(self):
-        return f'{self.name} {self.surname}'
 
     def __str__(self):
-        #return f'{self.name} {self.surname}, {self.phone}'
-        return f'{self.username}'
+        return f'{self.username}, Адрес электронной почты: {self.email}'
 
     @property
     def token(self):
