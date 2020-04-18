@@ -79,7 +79,7 @@ class Area(models.Model):
         verbose_name_plural = 'Площадь'
 
     def __str__(self):
-        return f'Общая площадь: {self.total_area} , Жилая площадь: {self.living_area}'
+        return f'Общая площадь: {self.total_area}, Жилая площадь: {self.living_area}'
 
 
 class Country(models.Model):
@@ -140,7 +140,8 @@ class Location(models.Model):
     longitude = models.FloatField('Долгота')
 
     def __str__(self):
-        return f'{self.country}, {self.region}, {self.city}, {self.district}, {self.street}, {self.house_number}'
+        return f'Страна: {self.country}, Регион: {self.region}, Город: {self.city}, Улица: {self.street}, ' \
+               f'Номер дома: {self.house_number}'
 
     class Meta:
         verbose_name = 'Адрес'
@@ -161,6 +162,10 @@ class Detail(models.Model):
     class Meta:
         verbose_name = 'Характеристика'
         verbose_name_plural = 'Характеристики'
+
+    def __str__(self):
+        return f'Мебель: {self.furniture}, Отопление: {self.heat}, Газ: {self.gas}, Электричество: {self.electricity}, ' \
+               f'Интернет: {self.internet}'
 
 
 class Currency(models.Model):
@@ -196,7 +201,7 @@ class Contact(models.Model):
         verbose_name_plural = 'Контактные данные'
 
     def __str__(self):
-        return self.name
+        return f'{self.role}, номер телефона: {self.phone}'
 
 
 class Apartment(models.Model):
@@ -225,8 +230,10 @@ class Apartment(models.Model):
     status = models.BooleanField('Статус объекта недвижимости', default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Владелец')
     tags = TaggableManager(blank=True)
-    nearby_objects = ArrayField(models.CharField(max_length=250, blank=True,null=True),null=True,blank=True ,default=list,verbose_name="Рядом есть")
-    objects_in_apartment = ArrayField(models.CharField(max_length=250, blank=True,null=True),null=True,blank=True , default=list,verbose_name="В квартире есть")
+    nearby_objects = ArrayField(models.CharField(max_length=250, blank=True, null=True), null=True, blank=True,
+                                default=list, verbose_name='Рядом есть')
+    objects_in_apartment = ArrayField(models.CharField(max_length=250, blank=True, null=True), null=True, blank=True,
+                                      default=list, verbose_name='В квартире есть')
 
     def save(self, *args, **kwargs):
         try:
@@ -253,10 +260,7 @@ class Apartment(models.Model):
         verbose_name_plural = 'Объекты недвижимости'
 
     def __str__(self):
-        return f'{self.type} , {self.location}'
-
-
-
+        return self.title
 
 
 class Comment(models.Model):
@@ -272,7 +276,7 @@ class Comment(models.Model):
         verbose_name_plural = 'Комментарии'
 
     def __str__(self):
-        return f'{self.name_of_publication} -- {self.date_of_publication}'
+        return self.name_of_publication
 
 
 class Booking(models.Model):
@@ -286,12 +290,16 @@ class Booking(models.Model):
         verbose_name_plural = 'Система бронирования'
 
     def __str__(self):
-        return f'{self.arrival_date} -- {self.departure_date}'
+        return f'{self.arrival_date} - {self.departure_date}'
 
 
 class ApartmentImage(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='apartment_image')
-    image = models.FileField(blank=True, null=True)
+    image = models.FileField(blank=True, null=True, verbose_name='Фотография')
+
+    class Meta:
+        verbose_name = 'Фотография'
+        verbose_name_plural = 'Фотографии'
 
     def __str__(self):
         return str(self.image)
