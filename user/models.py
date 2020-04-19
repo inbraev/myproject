@@ -73,7 +73,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
     def __str__(self):
-        return f'{self.username}, Адрес электронной почты: {self.email}'
+        return f'{self.username}'
 
     @property
     def token(self):
