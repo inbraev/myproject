@@ -137,11 +137,17 @@ class ApartmentView(generics.CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save(owner=self.request.user)
 
-
 class ApartmentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Apartment.objects.all()
+    serializer_class = ApartmentSerializer
+    permission_classes = (IsOwner,)
+    
+    
+class ApartmentDetail(generics.RetrieveAPIView):
     queryset = Apartment.objects.all()
     serializer_class = PrettyApartmentSerializer
     permission_classes = (permissions.AllowAny,)
+
 
 
 class ApartmentFilter(filters.FilterSet):
