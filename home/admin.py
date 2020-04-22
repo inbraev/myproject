@@ -8,6 +8,10 @@ admin.site.register(Type)
 admin.site.register(Series)
 admin.site.register(Construction)
 admin.site.register(State)
+admin.site.register(Location)
+admin.site.register(Area)
+admin.site.register(Detail)
+admin.site.register(Contact)
 
 admin.site.register(Country)
 admin.site.register(Region)
@@ -39,7 +43,7 @@ class ImageInline(admin.TabularInline):
 
 class ApartmentAdmin(ModelAdmin):
     fieldsets = (
-        ('Об объекте', {'fields': ['title', 'type', 'room', 'floor', 'area', 'location', 'price', 'another_price',
+        ('Об объекте', {'fields': ['title', 'type', 'room', 'floor', 'storey', 'area', 'location', 'price', 'another_price',
                                    'preview_image', 'pub_date', 'status']}),
         ('Характеристика', {'fields': ['series', 'construction_type', 'state', 'detail', 'nearby_objects',
                                        'objects_in_apartment', 'tags', 'description']}),
