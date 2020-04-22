@@ -28,6 +28,7 @@ urlpatterns = [
                   path('own-apartments/<int:id>/booking/', views.CreateBooking().as_view()),
                   path('own-apartments/<int:id>/booking/<int:pk>/', views.BookingDetail().as_view()),
                   path('add/', views.ApartmentView().as_view()),
+                  path('near/<int:pk>/', views.NearApartments().as_view()),
 
                   path('apartment/<int:pk>/', views.ApartmentDetail().as_view()),
                   path('apartments/', views.ApartmentListView().as_view()),

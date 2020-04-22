@@ -295,3 +295,23 @@ class BookingDetail(generics.RetrieveUpdateDestroyAPIView):
 class UploadImage(generics.ListCreateAPIView):
     serializer_class = uploadSerializer
     queryset = Apartment.objects.all()
+
+
+
+class NearApartments(generics.ListAPIView):
+    serializer_class = ApartmentsSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        pk=self.kwargs['pk']
+        from math import radians, cos, sin, asin, sqrt
+        current_apartment = Apartment.objects.get(id=pk)
+        dist = 20  # дистанция 20 км
+        mylon = current_apartment.location.longitude  # долгота центра
+        mylat = current_apartment.location.latitude  # широта
+        lon1 = mylon - dist / abs(cos(radians(mylat)) * 111.0)  # 1 градус широты = 111 км
+        lon2 = mylon + dist / abs(cos(radians(mylat)) * 111.0)
+        lat1 = mylat - (dist / 111.0)
+        lat2 = mylat + (dist / 111.0)
+        return   Apartment.objects.filter(location__latitude__range=(lat1, lat2)).filter(
+            location__longitude__range=(lon1, lon2))[:3]
