@@ -2,6 +2,7 @@ from rest_framework import serializers
 from taggit_serializer.serializers import (TagListSerializerField,
                                            TaggitSerializer)
 from .models import *
+from drf_writable_nested.serializers import WritableNestedModelSerializer
 
 
 class TypeSerializer(serializers.ModelSerializer):
@@ -45,6 +46,16 @@ class AreaSerializer(serializers.ModelSerializer):
         model = Area
         fields = ('id', 'total_area', 'living_area')
 
+    def validate_living_area(self,data):
+        if data < 0:
+            raise serializers.ValidationError("Жилая площадь не может быть отрицательной величиной!!!")
+        return data
+
+    def validate_total_area(self, data):
+
+        if data < 0:
+            raise serializers.ValidationError("Общая площадь не может быть отрицательной величиной!!!")
+        return data
 
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
@@ -182,7 +193,8 @@ class PrettyApartmentSerializer(TaggitSerializer, serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = (
-            'id', 'type', 'room', 'nearby_objects', 'tags', 'floor', 'area', 'series', 'title', 'construction_type',
+            'id', 'type', 'room', 'nearby_objects', 'tags', 'floor', 'storey', 'area', 'series', 'title',
+            'construction_type',
             'state',
             'detail', 'objects_in_apartment', 'location', 'price', 'currency', 'another_price', 'preview_image',
             'description',
@@ -205,7 +217,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
         fields = ('id', 'type', 'room', 'tags', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
                   'detail', 'location', 'price', 'currency', 'another_price', 'preview_image',
                   'description',
-                  'pub_date', 'nearby_objects', 'objects_in_apartment', 'apartment_image', 'contact', 'owner',
+                  'pub_date', 'storey', 'nearby_objects', 'objects_in_apartment', 'apartment_image', 'contact', 'owner',
                   'comments', 'orders')
 
     def create(self, validated_data):
@@ -224,10 +236,34 @@ class ApartmentSerializer(serializers.ModelSerializer):
         apartment.tags.set(*tags)
         return apartment
 
+    def validate_floor(self, data):
+        if data < 0:
+            raise serializers.ValidationError("Этаж не может быть отрицательной величиной!!!")
+        return data
+
+    def validate_storey(self, data):
+        if data < 0:
+            raise serializers.ValidationError("Этажность не может быть отрицательной величиной!!!")
+        return data
+
+    def validate(self, data):
+        if data['floor'] > data['storey']:
+            raise serializers.ValidationError("Этаж не должен превышать этажность дома!!!")
+        return data
+
+    def validate_area(self, data):
+        if data['living_area'] > data['total_area']:
+            raise serializers.ValidationError("Жилая площадь не должна быть больше чем общая площадь!!!")
+        return data
+
+    def validate_price(self, data):
+        if data < 0:
+            raise serializers.ValidationError("Цена не может быть отрицательной величиной!!!")
+        return data
+
 
 class ApartmentsSerializer(TaggitSerializer, serializers.ModelSerializer):
     tags = TagListSerializerField()
-
     owner = serializers.CharField(source='owner.__str__')
     location = Location2Serializer(many=False)
     apartment_image = uploadSerializer(many=True, read_only=True)
@@ -246,7 +282,7 @@ class ApartmentsSerializer(TaggitSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ('id', 'type', 'room', 'title', 'floor', 'area', 'series', 'construction_type', 'state',
+        fields = ('id', 'type', 'room', 'title', 'floor', 'storey', 'area', 'series', 'construction_type', 'state',
                   'detail', 'nearby_objects', 'location', 'tags', 'price', 'currency', 'another_price', 'preview_image',
                   'description',
                   'pub_date', 'apartment_image', 'objects_in_apartment', 'contact', 'owner', 'comments', 'orders')

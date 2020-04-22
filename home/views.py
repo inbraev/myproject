@@ -1,9 +1,13 @@
 from datetime import date
 
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
-from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework import generics, status
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.views import APIView
 
 from .permissions import IsOwner
 from .serializers import *
@@ -137,17 +141,56 @@ class ApartmentView(generics.CreateAPIView):
     def perform_create(self, serializer):
         return serializer.save(owner=self.request.user)
 
-class ApartmentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Apartment.objects.all()
-    serializer_class = ApartmentSerializer
-    permission_classes = (IsOwner,)
-    
-    
-class ApartmentDetail(generics.RetrieveAPIView):
-    queryset = Apartment.objects.all()
-    serializer_class = PrettyApartmentSerializer
-    permission_classes = (permissions.AllowAny,)
 
+class ApartmentDetail(APIView):
+
+
+    def get_object(self, pk):
+        try:
+            return Apartment.objects.get(pk=pk)
+        except:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        apartment = self.get_object(pk)
+        current_user = request.user
+        if apartment.owner == current_user:
+            serializer = ApartmentSerializer(apartment)
+        else:
+            serializer = PrettyApartmentSerializer(apartment)
+
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        apartment = self.get_object(pk)
+        if apartment.owner == request.user:
+            serializer = ApartmentSerializer(apartment, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(data="У вас нет прав изменять данный объект недвижимости")
+
+    def patch(self, request, pk):
+        apartment = self.get_object(pk)
+        if apartment.owner == request.user:
+            serializer = ApartmentSerializer(apartment, data=request.data,
+                                             partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(data="У вас нет прав изменять данный объект недвижимости")
+
+    def delete(self, request, pk, format=None):
+        apartment = self.get_object(pk)
+        if apartment.owner == request.user:
+            apartment.delete()
+            return Response(data="Вы успешно удалили объект недвижимости")
+        else:
+            return Response(data="У вас нет прав удалять данный объект недвижимости")
 
 
 class ApartmentFilter(filters.FilterSet):

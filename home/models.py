@@ -208,6 +208,7 @@ class Apartment(models.Model):
     type = models.ForeignKey(Type, on_delete=models.SET_NULL, null=True, verbose_name='Тип недвижимости')
     room = models.PositiveSmallIntegerField(default=1, verbose_name='Количество комнат')
     floor = models.PositiveSmallIntegerField(default=1, verbose_name='Этаж')
+    storey = models.PositiveSmallIntegerField(default=9, verbose_name='Этажность')
     area = models.ForeignKey(Area, on_delete=models.SET_NULL, null=True, verbose_name='Площадь', related_name='area')
     series = models.ForeignKey(Series, on_delete=models.SET_NULL, blank=True, null=True, verbose_name='Серия')
     construction_type = models.ForeignKey(Construction, on_delete=models.SET_NULL, null=True,
@@ -219,7 +220,7 @@ class Apartment(models.Model):
                                  related_name='location')
 
     price = models.FloatField('Цена')
-    title = models.CharField(max_length=150, verbose_name='Заголовок', null=True, blank=True)
+    title = models.CharField(max_length=150, verbose_name='Заголовок',null=True, blank=True)
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, verbose_name='Валюта')
     preview_image = models.ImageField('Главное фото', upload_to='photos/', blank=True, null=True)
     description = models.TextField('Описание', blank=True, null=True)
@@ -229,9 +230,10 @@ class Apartment(models.Model):
     another_price = models.FloatField('Конвертированная цена', null=True, blank=True, default=0)
     status = models.BooleanField('Статус объекта недвижимости', default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Владелец')
-    tags = TaggableManager(blank=True)
+    tags = TaggableManager(blank=True, verbose_name="Теги")
     nearby_objects = ArrayField(models.CharField(max_length=250, blank=True, null=True), null=True, blank=True,
                                 default=list, verbose_name='Рядом есть')
+
     objects_in_apartment = ArrayField(models.CharField(max_length=250, blank=True, null=True), null=True, blank=True,
                                       default=list, verbose_name='В квартире есть')
 
