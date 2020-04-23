@@ -46,7 +46,7 @@ class AreaSerializer(serializers.ModelSerializer):
         model = Area
         fields = ('id', 'total_area', 'living_area')
 
-    def validate_living_area(self,data):
+    def validate_living_area(self, data):
         if data < 0:
             raise serializers.ValidationError("Жилая площадь не может быть отрицательной величиной!!!")
         return data
@@ -56,6 +56,7 @@ class AreaSerializer(serializers.ModelSerializer):
         if data < 0:
             raise serializers.ValidationError("Общая площадь не может быть отрицательной величиной!!!")
         return data
+
 
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
@@ -118,8 +119,12 @@ class RoleSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.ModelSerializer):
-    role = serializers.StringRelatedField()
+    class Meta:
+        model = Contact
+        fields = ('id', 'role', 'phone', 'name', 'surname')
 
+class PrettyContactSerializer(serializers.ModelSerializer):
+    role = serializers.StringRelatedField()
     class Meta:
         model = Contact
         fields = ('id', 'role', 'phone', 'name', 'surname')
@@ -184,7 +189,7 @@ class PrettyApartmentSerializer(TaggitSerializer, serializers.ModelSerializer):
     location = Location2Serializer()
     apartment_image = uploadSerializer(many=True, read_only=True)
     area = AreaSerializer()
-    contact = ContactSerializer()
+    contact = PrettyContactSerializer()
     detail = DetailSerializer()
     comments = CommentSerializer(many=True, read_only=True)
     orders = BookingSerializer(many=True, read_only=True)
@@ -201,16 +206,18 @@ class PrettyApartmentSerializer(TaggitSerializer, serializers.ModelSerializer):
             'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
 
 
-class ApartmentSerializer(serializers.ModelSerializer):
+class ApartmentSerializer(WritableNestedModelSerializer):
     tags = TagListSerializerField()
     owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
     location = LocationSerializer()
-    apartment_image = uploadSerializer(many=True, read_only=True)
+    apartment_image = uploadSerializer(many=True)
     area = AreaSerializer()
     contact = ContactSerializer()
     detail = DetailSerializer()
     comments = CommentSerializer(many=True, read_only=True)
     orders = BookingSerializer(many=True, read_only=True)
+    floor = serializers.IntegerField()
+    storey = serializers.IntegerField()
 
     class Meta:
         model = Apartment
@@ -232,7 +239,6 @@ class ApartmentSerializer(serializers.ModelSerializer):
         detail = Detail.objects.create(**detail_data)
         apartment = Apartment.objects.create(area=area, location=location, detail=detail, contact=contact,
                                              **validated_data)
-
         apartment.tags.set(*tags)
         return apartment
 
@@ -247,13 +253,32 @@ class ApartmentSerializer(serializers.ModelSerializer):
         return data
 
     def validate(self, data):
-        if data['floor'] > data['storey']:
-            raise serializers.ValidationError("Этаж не должен превышать этажность дома!!!")
-        return data
+        floor = data.get('floor')
+        storey = data.get('storey')
+        area = data.get('area')
+        existing_data = self.to_representation(self.instance)
 
-    def validate_area(self, data):
-        if data['living_area'] > data['total_area']:
-            raise serializers.ValidationError("Жилая площадь не должна быть больше чем общая площадь!!!")
+        if floor and storey:
+            if data['floor'] > data['storey']:
+                raise serializers.ValidationError("Этаж не должен превышать этажность дома!!!")
+        elif storey:
+            if existing_data['floor'] > data['storey']:
+                raise serializers.ValidationError("Этажность не может быть меньше этажа дома!!!")
+        elif floor:
+            if existing_data['storey'] < data['floor']:
+                raise serializers.ValidationError("Этаж не должен превышать этажность дома!!!")
+        if area:
+            living_area = area.get('living_area')
+            total_area = area.get('total_area')
+            if total_area and living_area:
+                if area['living_area'] > area['total_area']:
+                    raise serializers.ValidationError("Жилая площадь не должна быть больше чем общая площадь!!!")
+            elif total_area:
+                if existing_data['area']['living_area'] < area['total_area']:
+                    raise serializers.ValidationError("Общая площадь не может быть меньше жилой площади!!!")
+            elif living_area:
+                if existing_data['area']['total_area'] < area['living_area']:
+                    raise serializers.ValidationError("Жилая площадь не должна быть больше чем общая площадь!!!")
         return data
 
     def validate_price(self, data):
@@ -267,11 +292,11 @@ class ApartmentsSerializer(TaggitSerializer, serializers.ModelSerializer):
     owner = serializers.CharField(source='owner.__str__')
     location = Location2Serializer(many=False)
     apartment_image = uploadSerializer(many=True, read_only=True)
-    contact = ContactSerializer(many=False)
+    contact = PrettyContactSerializer(many=False)
     type = serializers.CharField(source='type.__str__')
-    room = serializers.CharField()
+    room = serializers.IntegerField()
     currency = serializers.CharField(source='currency.__str__')
-    floor = serializers.CharField()
+    floor = serializers.IntegerField()
     series = serializers.CharField(source='series.__str__')
     construction_type = serializers.CharField(source='construction_type.__str__')
     state = serializers.CharField(source='state.__str__')
