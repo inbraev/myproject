@@ -149,12 +149,12 @@ class Location(models.Model):
 
 
 class Detail(models.Model):
-    furniture = models.BooleanField('Мебель')
-    heat = models.BooleanField('Отопление')
-    gas = models.BooleanField('Газ')
-    electricity = models.BooleanField('Электричество')
-    internet = models.BooleanField('Интернет')
-    phone = models.BooleanField('Телевонная линия')
+    furniture = models.BooleanField('Мебель',blank=True,null=True)
+    heat = models.BooleanField('Отопление',blank=True,null=True)
+    gas = models.BooleanField('Газ',blank=True,null=True)
+    electricity = models.BooleanField('Электричество',blank=True,null=True)
+    internet = models.BooleanField('Интернет',blank=True,null=True)
+    phone = models.BooleanField('Телевонная линия',blank=True,null=True)
     parking = models.BooleanField('Парковка', blank=True, null=True)
     elevator = models.BooleanField('Лифт', blank=True, null=True)
     security = models.BooleanField('Охрана', blank=True, null=True)
