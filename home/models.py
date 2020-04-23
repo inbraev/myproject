@@ -71,8 +71,8 @@ class State(models.Model):
 
 
 class Area(models.Model):
-    total_area = models.FloatField('Общая площадь')
-    living_area = models.FloatField('Жилая площадь')
+    total_area = models.FloatField('Общая площадь', blank=True, null=True)
+    living_area = models.FloatField('Жилая площадь', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Площадь'
@@ -135,9 +135,9 @@ class Location(models.Model):
     city = models.CharField(max_length=70, default="Бишкек", verbose_name='Город')
     district = models.CharField(max_length=170, default="8 микрорайон", verbose_name='Район')
     street = models.CharField('Улица', max_length=100)
-    house_number = models.IntegerField('Номер дома')
-    latitude = models.FloatField('Широта')
-    longitude = models.FloatField('Долгота')
+    house_number = models.IntegerField('Номер дома', blank=True, null=True)
+    latitude = models.FloatField('Широта', blank=True, null=True)
+    longitude = models.FloatField('Долгота', blank=True, null=True)
 
     def __str__(self):
         return f'Страна: {self.country}, Регион: {self.region}, Город: {self.city}, Улица: {self.street}, ' \
@@ -192,7 +192,7 @@ class Role(models.Model):
 
 class Contact(models.Model):
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, verbose_name='Тип арендодатора')
-    phone = models.CharField('Номер телефона', max_length=13)
+    phone = models.CharField('Номер телефона', max_length=25, blank=True, null=True)
     name = models.CharField('Имя', max_length=30, blank=True, null=True)
     surname = models.CharField('Фамилия', max_length=30, blank=True, null=True)
 
@@ -201,7 +201,7 @@ class Contact(models.Model):
         verbose_name_plural = 'Контактные данные'
 
     def __str__(self):
-        return f'{self.role}, номер телефона: {self.phone}'
+        return f'{self.surname} {self.name}, номер телефона: {self.phone}'
 
 
 class Apartment(models.Model):
@@ -220,7 +220,7 @@ class Apartment(models.Model):
                                  related_name='location')
 
     price = models.FloatField('Цена')
-    title = models.CharField(max_length=150, verbose_name='Заголовок',null=True, blank=True)
+    title = models.CharField(max_length=150, verbose_name='Заголовок', null=True, blank=True)
     currency = models.ForeignKey(Currency, on_delete=models.SET_NULL, null=True, verbose_name='Валюта')
     preview_image = models.ImageField('Главное фото', upload_to='photos/', blank=True, null=True)
     description = models.TextField('Описание', blank=True, null=True)
@@ -268,8 +268,8 @@ class Apartment(models.Model):
 class Comment(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.SET_NULL, null=True, verbose_name='Объект недвижимости',
                                   related_name='comments')
-    name_of_publication = models.CharField('Заголовок', max_length=100, default=' ', help_text='Введите заголовок')
-    text_of_publication = models.TextField('Текст публикации', help_text='Введите текст')
+    name_of_publication = models.CharField('Заголовок',blank=True,null=True, max_length=100, default=' ', help_text='Введите заголовок')
+    text_of_publication = models.TextField('Текст публикации',blank=True,null=True, help_text='Введите текст')
     date_of_publication = models.DateTimeField('Дата публикации', auto_now_add=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Владелец')
 
@@ -284,8 +284,8 @@ class Comment(models.Model):
 class Booking(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.SET_NULL, null=True, verbose_name='Объект недвижимости',
                                   related_name='orders')
-    arrival_date = models.DateField('Дата прибытия', help_text='гггг-мм-дд')
-    departure_date = models.DateField('Дата отбытия', help_text='гггг-мм-дд')
+    arrival_date = models.DateField('Дата прибытия', help_text='гггг-мм-дд',blank=True,null=True,)
+    departure_date = models.DateField('Дата отбытия', help_text='гггг-мм-дд',blank=True,null=True,)
 
     class Meta:
         verbose_name = 'Система бронирования'
