@@ -8,7 +8,7 @@ from rest_framework import generics, status
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.views import APIView
-
+from django.core.exceptions import ObjectDoesNotExist
 from .permissions import IsOwner
 from .serializers import *
 
@@ -144,12 +144,11 @@ class ApartmentView(generics.CreateAPIView):
 
 class ApartmentDetail(APIView):
 
-
     def get_object(self, pk):
         try:
             return Apartment.objects.get(pk=pk)
         except:
-            raise Http404
+            raise NotFound("Квартира не найдена!")
 
     def get(self, request, pk, format=None):
         apartment = self.get_object(pk)
@@ -239,7 +238,7 @@ class CreateComment(generics.ListCreateAPIView):
             try:
                 apartments = Apartment.objects.get(id=self.kwargs['pk'])
                 return serializer.save(owner=self.request.user, apartment=apartments)
-            except:
+            except ObjectDoesNotExist:
                 raise PermissionDenied("Квартира не найдена")
         else:
             raise PermissionDenied('Авторизуйтесь в системе для добавления комментариев')
@@ -273,7 +272,7 @@ class CreateBooking(generics.ListCreateAPIView):
                 serializer.save(apartment=apartments)
             else:
                 raise PermissionDenied('Вы не являетесь собственником квартиры')
-        except:
+        except ObjectDoesNotExist:
             raise NotFound('Квартира не найдена')
 
     def get_queryset(self):
@@ -283,7 +282,7 @@ class CreateBooking(generics.ListCreateAPIView):
                 return Booking.objects.filter(apartment__id=self.kwargs['id'])
             else:
                 raise PermissionDenied('У вас нету прав на изменение ')
-        except:
+        except ObjectDoesNotExist:
             raise NotFound('Квартира не найдена')
 
 
@@ -297,21 +296,26 @@ class UploadImage(generics.ListCreateAPIView):
     queryset = Apartment.objects.all()
 
 
-
 class NearApartments(generics.ListAPIView):
     serializer_class = ApartmentsSerializer
     permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
-        pk=self.kwargs['pk']
+        pk = self.kwargs['pk']
         from math import radians, cos, sin, asin, sqrt
-        current_apartment = Apartment.objects.get(id=pk)
-        dist = 20  # дистанция 20 км
-        mylon = current_apartment.location.longitude  # долгота центра
-        mylat = current_apartment.location.latitude  # широта
-        lon1 = mylon - dist / abs(cos(radians(mylat)) * 111.0)  # 1 градус широты = 111 км
-        lon2 = mylon + dist / abs(cos(radians(mylat)) * 111.0)
-        lat1 = mylat - (dist / 111.0)
-        lat2 = mylat + (dist / 111.0)
-        return   Apartment.objects.filter(location__latitude__range=(lat1, lat2)).filter(
-            location__longitude__range=(lon1, lon2))[:3]
+        try:
+            current_apartment = Apartment.objects.get(id=pk)
+            dist = 5  # дистанция 5 км
+            mylon = current_apartment.location.longitude
+            mylat = current_apartment.location.latitude
+            lon1 = mylon - dist / abs(cos(radians(mylat)) * 111.0)
+            lon2 = mylon + dist / abs(cos(radians(mylat)) * 111.0)
+            lat1 = mylat - (dist / 111.0)
+            lat2 = mylat + (dist / 111.0)
+            near_apartments = Apartment.objects.filter(location__latitude__range=(lat1, lat2)).filter(
+                location__longitude__range=(lon1, lon2)).exclude(id=pk)[:3]
+            if not near_apartments:
+                raise NotFound("Рядом нет квартир")
+            return near_apartments
+        except ObjectDoesNotExist:
+            raise NotFound('Квартира не найдена')
