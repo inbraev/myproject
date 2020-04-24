@@ -2,7 +2,7 @@
 
 import django.contrib.postgres.fields
 from django.db import migrations, models
-import taggit.managers
+
 
 
 class Migration(migrations.Migration):
