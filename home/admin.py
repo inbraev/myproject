@@ -46,7 +46,7 @@ class ApartmentAdmin(ModelAdmin):
         ('Об объекте', {'fields': ['title', 'type', 'room', 'floor', 'storey', 'area', 'location', 'price', 'another_price',
                                    'preview_image', 'pub_date', 'status']}),
         ('Характеристика', {'fields': ['series', 'construction_type', 'state', 'detail', 'nearby_objects',
-                                       'objects_in_apartment', 'tags', 'description']}),
+                                       'objects_in_apartment',   'description']}),
         ('Контактная информация', {'fields': ['owner', 'contact']}),
     )
 
