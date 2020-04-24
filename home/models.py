@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from taggit.managers import TaggableManager
 from django.contrib.postgres.fields import ArrayField
 
 
@@ -230,7 +229,7 @@ class Apartment(models.Model):
     another_price = models.FloatField('Конвертированная цена', null=True, blank=True, default=0)
     status = models.BooleanField('Статус объекта недвижимости', default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name='Владелец')
-    tags = TaggableManager(blank=True, verbose_name="Теги")
+
     nearby_objects = ArrayField(models.CharField(max_length=250, blank=True, null=True), null=True, blank=True,
                                 default=list, verbose_name='Рядом есть')
 
@@ -262,7 +261,7 @@ class Apartment(models.Model):
         verbose_name_plural = 'Объекты недвижимости'
 
     def __str__(self):
-        return self.title
+        return self.title or ''
 
 
 class Comment(models.Model):
