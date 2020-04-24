@@ -241,7 +241,8 @@ class CreateComment(generics.ListCreateAPIView):
             except ObjectDoesNotExist:
                 raise PermissionDenied("Квартира не найдена")
         else:
-            raise PermissionDenied('Авторизуйтесь в системе для добавления комментариев')
+            raise PermissionDenied('Авторизуйтесь в системе\
+             для добавления комментариев')
 
     serializer_class = CommentSerializer
     permission_classes = (permissions.AllowAny,)
