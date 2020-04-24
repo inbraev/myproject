@@ -163,7 +163,7 @@ class ApartmentDetail(APIView):
     def put(self, request, pk, format=None):
         apartment = self.get_object(pk)
         if apartment.owner == request.user:
-            serializer = ApartmentSerializer(apartment, data=request.data)
+            serializer = ChangeApartmentSerializer(apartment, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
@@ -174,8 +174,8 @@ class ApartmentDetail(APIView):
     def patch(self, request, pk):
         apartment = self.get_object(pk)
         if apartment.owner == request.user:
-            serializer = ApartmentSerializer(apartment, data=request.data,
-                                             partial=True)
+            serializer = ChangeApartmentSerializer(apartment, data=request.data,
+                                                   partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
@@ -305,7 +305,7 @@ class NearApartments(generics.ListAPIView):
         from math import radians, cos, sin, asin, sqrt
         try:
             current_apartment = Apartment.objects.get(id=pk)
-            dist = 5  # дистанция 5 км
+            dist = 3  # дистанция 3 км радиуса
             mylon = current_apartment.location.longitude
             mylat = current_apartment.location.latitude
             lon1 = mylon - dist / abs(cos(radians(mylat)) * 111.0)
