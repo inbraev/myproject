@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from taggit_serializer.serializers import (TagListSerializerField,
-                                           TaggitSerializer)
+
 from .models import *
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 
@@ -123,8 +122,10 @@ class ContactSerializer(serializers.ModelSerializer):
         model = Contact
         fields = ('id', 'role', 'phone', 'name', 'surname')
 
+
 class PrettyContactSerializer(serializers.ModelSerializer):
     role = serializers.StringRelatedField()
+
     class Meta:
         model = Contact
         fields = ('id', 'role', 'phone', 'name', 'surname')
@@ -178,7 +179,7 @@ class uploadSerializer(serializers.HyperlinkedModelSerializer):
         return apartment
 
 
-class PrettyApartmentSerializer(TaggitSerializer, serializers.ModelSerializer):
+class PrettyApartmentSerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
     owner = serializers.StringRelatedField()
     type = serializers.StringRelatedField()
@@ -193,12 +194,11 @@ class PrettyApartmentSerializer(TaggitSerializer, serializers.ModelSerializer):
     detail = DetailSerializer()
     comments = CommentSerializer(many=True, read_only=True)
     orders = BookingSerializer(many=True, read_only=True)
-    tags = TagListSerializerField()
 
     class Meta:
         model = Apartment
         fields = (
-            'id', 'type', 'room', 'nearby_objects', 'tags', 'floor', 'storey', 'area', 'series', 'title',
+            'id', 'type', 'room', 'nearby_objects', 'floor', 'storey', 'area', 'series', 'title',
             'construction_type',
             'state',
             'detail', 'objects_in_apartment', 'location', 'price', 'currency', 'another_price', 'preview_image',
@@ -206,8 +206,58 @@ class PrettyApartmentSerializer(TaggitSerializer, serializers.ModelSerializer):
             'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
 
 
-class ApartmentSerializer(WritableNestedModelSerializer):
-    tags = TagListSerializerField()
+class ApartmentSerializer(serializers.ModelSerializer):
+    owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
+    location = LocationSerializer()
+    apartment_image = uploadSerializer(many=True, read_only=True)
+    area = AreaSerializer()
+    contact = ContactSerializer()
+    detail = DetailSerializer()
+    comments = CommentSerializer(many=True, read_only=True)
+    orders = BookingSerializer(many=True, read_only=True)
+    floor = serializers.IntegerField()
+    storey = serializers.IntegerField()
+
+    class Meta:
+        model = Apartment
+        fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
+                  'detail', 'location', 'price', 'currency', 'another_price', 'preview_image',
+                  'description',
+                  'pub_date', 'storey', 'nearby_objects', 'objects_in_apartment', 'apartment_image', 'contact', 'owner',
+                  'comments', 'orders')
+
+    def create(self, validated_data):
+        location_data = validated_data.pop('location')
+        area_data = validated_data.pop('area')
+        contact_data = validated_data.pop('contact')
+        detail_data = validated_data.pop('detail')
+
+        area = Area.objects.create(**area_data)
+        location = Location.objects.create(**location_data)
+        contact = Contact.objects.create(**contact_data)
+        detail = Detail.objects.create(**detail_data)
+        apartment = Apartment.objects.create(area=area, location=location, detail=detail, contact=contact,
+                                             **validated_data)
+
+        return apartment
+
+    def validate_floor(self, data):
+        if data < 0:
+            raise serializers.ValidationError("Этаж не может быть отрицательной величиной!!!")
+        return data
+
+    def validate_storey(self, data):
+        if data < 0:
+            raise serializers.ValidationError("Этажность не может быть отрицательной величиной!!!")
+        return data
+
+    def validate_price(self, data):
+        if data < 0:
+            raise serializers.ValidationError("Цена не может быть отрицательной величиной!!!")
+        return data
+
+
+class ChangeApartmentSerializer(WritableNestedModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
     location = LocationSerializer()
     apartment_image = uploadSerializer(many=True)
@@ -221,7 +271,7 @@ class ApartmentSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = Apartment
-        fields = ('id', 'type', 'room', 'tags', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
+        fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
                   'detail', 'location', 'price', 'currency', 'another_price', 'preview_image',
                   'description',
                   'pub_date', 'storey', 'nearby_objects', 'objects_in_apartment', 'apartment_image', 'contact', 'owner',
@@ -232,14 +282,14 @@ class ApartmentSerializer(WritableNestedModelSerializer):
         area_data = validated_data.pop('area')
         contact_data = validated_data.pop('contact')
         detail_data = validated_data.pop('detail')
-        tags = validated_data.pop('tags')
+
         area = Area.objects.create(**area_data)
         location = Location.objects.create(**location_data)
         contact = Contact.objects.create(**contact_data)
         detail = Detail.objects.create(**detail_data)
         apartment = Apartment.objects.create(area=area, location=location, detail=detail, contact=contact,
                                              **validated_data)
-        apartment.tags.set(*tags)
+
         return apartment
 
     def validate_floor(self, data):
@@ -283,12 +333,12 @@ class ApartmentSerializer(WritableNestedModelSerializer):
 
     def validate_price(self, data):
         if data < 0:
-            raise serializers.ValidationError("Цена не может быть отрицательной величиной!!!")
+            raise serializers.ValidationError("Цена не может " \
+                                              "быть отрицательной величиной!!!")
         return data
 
 
-class ApartmentsSerializer(TaggitSerializer, serializers.ModelSerializer):
-    tags = TagListSerializerField()
+class ApartmentsSerializer(serializers.ModelSerializer):
     owner = serializers.CharField(source='owner.__str__')
     location = Location2Serializer(many=False)
     apartment_image = uploadSerializer(many=True, read_only=True)
@@ -308,6 +358,6 @@ class ApartmentsSerializer(TaggitSerializer, serializers.ModelSerializer):
     class Meta:
         model = Apartment
         fields = ('id', 'type', 'room', 'title', 'floor', 'storey', 'area', 'series', 'construction_type', 'state',
-                  'detail', 'nearby_objects', 'location', 'tags', 'price', 'currency', 'another_price', 'preview_image',
+                  'detail', 'nearby_objects', 'location', 'price', 'currency', 'another_price', 'preview_image',
                   'description',
                   'pub_date', 'apartment_image', 'objects_in_apartment', 'contact', 'owner', 'comments', 'orders')
