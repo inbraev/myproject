@@ -320,3 +320,46 @@ class NearApartments(generics.ListAPIView):
             return near_apartments
         except ObjectDoesNotExist:
             raise NotFound('Квартира не найдена')
+
+
+class PhotoUpdate(APIView):
+    permission_classes = (IsOwner,)
+
+    def get_object(self, pk):
+        try:
+            return Apartment.objects.get(pk=pk)
+        except:
+            raise NotFound("Фотография не найдена!")
+
+    def get(self, request, pk, format=None):
+        apartment = self.get_object(pk)
+
+        serializer = ChangeApartmentImageSerializer(apartment.apartment_image.last())
+        print(serializer)
+        print(serializer.data)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        photo = self.get_object(pk)
+        serializer = PhotoChangeSerializer(photo, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def patch(self, request, pk):
+        photo = self.get_object(2).apartment_image.last()
+
+        serializer = PhotoChangeSerializer(photo, data=request.data,
+                                                   partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        photo = self.get_object(pk)
+        photo.delete()
+        return Response(data="Вы успешно удалили фотографию")
+

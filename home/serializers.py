@@ -260,7 +260,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
 class ChangeApartmentSerializer(WritableNestedModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(read_only=True, default=serializers.CurrentUserDefault())
     location = LocationSerializer()
-    apartment_image = uploadSerializer(many=True)
+    apartment_image = ApartmentImageSerializer(many=True)
     area = AreaSerializer()
     contact = ContactSerializer()
     detail = DetailSerializer()
@@ -361,3 +361,17 @@ class ApartmentsSerializer(serializers.ModelSerializer):
                   'detail', 'nearby_objects', 'location', 'price', 'currency', 'another_price', 'preview_image',
                   'description',
                   'pub_date', 'apartment_image', 'objects_in_apartment', 'contact', 'owner', 'comments', 'orders')
+
+
+class PhotoChangeSerializer(serializers.ModelSerializer):
+    apartment = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = ApartmentImage
+        fields = ('id', 'apartment', 'image',)
+
+class ChangeApartmentImageSerializer(serializers.ModelSerializer):
+    apartment = serializers.PrimaryKeyRelatedField(read_only=True)
+    class Meta:
+        model = ApartmentImage
+        fields = ('id', 'apartment', 'image',)
