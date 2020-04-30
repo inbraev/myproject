@@ -155,10 +155,18 @@ class BookingSerializer(serializers.ModelSerializer):
         return data
 
 
+class PhotoDetailSerializer(serializers.ModelSerializer):
+    apartment = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = ApartmentImage
+        fields = ('id', 'apartment','image',)
+
+
 class ApartmentImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApartmentImage
-        fields = ('image',)
+        fields = ('image','id')
 
 
 class uploadSerializer(serializers.HyperlinkedModelSerializer):
@@ -166,7 +174,7 @@ class uploadSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = ApartmentImage
-        fields = ('images', 'image',)
+        fields = ('images', 'image','id')
 
     def create(self, validated_data):
         images_data = self.context.get('view').request.FILES
@@ -370,8 +378,10 @@ class PhotoChangeSerializer(serializers.ModelSerializer):
         model = ApartmentImage
         fields = ('id', 'apartment', 'image',)
 
+
 class ChangeApartmentImageSerializer(serializers.ModelSerializer):
     apartment = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = ApartmentImage
         fields = ('id', 'apartment', 'image',)

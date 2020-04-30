@@ -292,6 +292,12 @@ class BookingDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BookingSerializer
 
 
+class PhotoDetail(generics.RetrieveUpdateDestroyAPIView ):
+    queryset = ApartmentImage.objects.all()
+    serializer_class = PhotoDetailSerializer
+
+
+
 class UploadImage(generics.ListCreateAPIView):
     serializer_class = uploadSerializer
     queryset = Apartment.objects.all()
@@ -347,12 +353,11 @@ class PhotoUpdate(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
     def patch(self, request, pk):
         photo = self.get_object(2).apartment_image.last()
 
         serializer = PhotoChangeSerializer(photo, data=request.data,
-                                                   partial=True)
+                                           partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -362,4 +367,3 @@ class PhotoUpdate(APIView):
         photo = self.get_object(pk)
         photo.delete()
         return Response(data="Вы успешно удалили фотографию")
-
