@@ -219,7 +219,7 @@ class ApartmentListView(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
-        return Apartment.objects.filter(status=True)
+        return Apartment.objects.filter(status=True).order_by("-pub_date")
 
 
 class CreateComment(generics.ListCreateAPIView):

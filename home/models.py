@@ -134,7 +134,7 @@ class Location(models.Model):
     city = models.CharField(max_length=70, default="Бишкек", verbose_name='Город')
     district = models.CharField(max_length=170, default="8 микрорайон", verbose_name='Район')
     street = models.CharField('Улица', max_length=100)
-    house_number = models.IntegerField('Номер дома', blank=True, null=True)
+    house_number = models.CharField('Номер дома',max_length=15, blank=True, null=True)
     latitude = models.FloatField('Широта', blank=True, null=True)
     longitude = models.FloatField('Долгота', blank=True, null=True)
 
