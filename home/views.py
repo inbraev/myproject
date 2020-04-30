@@ -199,12 +199,15 @@ class ApartmentFilter(filters.FilterSet):
     departure_date = filters.DateFilter(field_name='orders__arrival_date', lookup_expr='lt')
     min_area = filters.NumberFilter(field_name='area__total_area', lookup_expr='gte')
     max_area = filters.NumberFilter(field_name='area__total_area', lookup_expr='lte')
+    objects_in_apartment = filters.CharFilter(lookup_expr='icontains')
+    nearby_objects = filters.CharFilter(lookup_expr='icontains')
 
     class Meta:
         model = Apartment
         fields = ['location__region', 'location__city', 'location__district', 'type', 'room', 'floor',
                   'construction_type', 'state',
                   'min_price', 'max_price', 'currency', 'arrival_date', 'departure_date', 'min_area', 'max_area',
+                  'objects_in_apartment', 'nearby_objects',
                   'detail__internet', 'detail__furniture', 'detail__heat', 'detail__gas',
                   'detail__phone', 'detail__parking', 'detail__elevator', 'detail__security']
 
