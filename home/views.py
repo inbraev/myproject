@@ -216,15 +216,6 @@ class ApartmentListView(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
-        for apartment in Apartment.objects.all():
-            if apartment.orders:
-                for order in apartment.orders.filter(departure_date__gte=date.today()):
-                    if date.today() == order.arrival_date:
-                        apartment.status = False
-                        apartment.save()
-                    if date.today() == order.departure_date:
-                        apartment.status = True
-                        apartment.save()
         return Apartment.objects.filter(status=True)
 
 
@@ -239,7 +230,7 @@ class CreateComment(generics.ListCreateAPIView):
                 apartments = Apartment.objects.get(id=self.kwargs['pk'])
                 return serializer.save(owner=self.request.user, apartment=apartments)
             except ObjectDoesNotExist:
-                raise PermissionDenied("Квартира не найдена")
+                raise NotFound("Квартира не найдена")
         else:
             raise PermissionDenied('Авторизуйтесь в системе\
              для добавления комментариев')
