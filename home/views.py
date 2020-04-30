@@ -292,10 +292,9 @@ class BookingDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BookingSerializer
 
 
-class PhotoDetail(generics.RetrieveUpdateDestroyAPIView ):
+class PhotoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = ApartmentImage.objects.all()
     serializer_class = PhotoDetailSerializer
-
 
 
 class UploadImage(generics.ListCreateAPIView):
@@ -329,41 +328,56 @@ class NearApartments(generics.ListAPIView):
 
 
 class PhotoUpdate(APIView):
-    permission_classes = (IsOwner,)
-
-    def get_object(self, pk):
+    def get(self, request, id, pk, format=None):
         try:
-            return Apartment.objects.get(pk=pk)
-        except:
-            raise NotFound("Фотография не найдена!")
-
-    def get(self, request, pk, format=None):
-        apartment = self.get_object(pk)
-
-        serializer = ChangeApartmentImageSerializer(apartment.apartment_image.last())
-        print(serializer)
-        print(serializer.data)
+            serializer = PhotoDetailSerializer(ApartmentImage.objects.get(id=pk))
+        except ObjectDoesNotExist:
+            raise NotFound("Квартира не найдена")
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        photo = self.get_object(pk)
-        serializer = PhotoChangeSerializer(photo, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+    def put(self, request, id, pk, format=None):
+        try:
+            apartment = Apartment.objects.get(pk=id)
+        except ObjectDoesNotExist:
+            raise NotFound("Квартира не найдена!")
+        if request.user != apartment.owner:
+            raise PermissionDenied("Вы не являетесь собственником квартиры")
+        try:
+            serializer = PhotoDetailSerializer(ApartmentImage.objects.get(id=pk), data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+        except ObjectDoesNotExist:
+            raise NotFound("Фотография не найдена")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, pk):
-        photo = self.get_object(2).apartment_image.last()
-
-        serializer = PhotoChangeSerializer(photo, data=request.data,
-                                           partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+    def patch(self, request, id, pk):
+        try:
+            apartment = Apartment.objects.get(pk=id)
+        except ObjectDoesNotExist:
+            raise NotFound("Квартира не найдена!")
+        if request.user != apartment.owner:
+            raise PermissionDenied("Вы не являетесь собственником квартиры")
+        try:
+            serializer = PhotoDetailSerializer(ApartmentImage.objects.get(id=pk), data=request.data,
+                                               partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+        except ObjectDoesNotExist:
+            raise NotFound("Фотография не найдена")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format=None):
-        photo = self.get_object(pk)
-        photo.delete()
+    def delete(self, request, id, pk, format=None):
+        try:
+            apartment = Apartment.objects.get(pk=id)
+        except ObjectDoesNotExist:
+            raise NotFound("Квартира не найдена!")
+        if request.user != apartment.owner:
+            raise PermissionDenied("Вы не являетесь собственником квартиры")
+        try:
+            photo = ApartmentImage.objects.get(id=pk)
+            photo.delete()
+        except ObjectDoesNotExist:
+            raise NotFound("Фотография не найдена!")
         return Response(data="Вы успешно удалили фотографию")
