@@ -7,7 +7,6 @@ urlpatterns = [
     path('registration/', RegistrationAPIView.as_view(), name='registration'),
     path('users/<int:pk>/', UserRetrieveUpdateAPIView.as_view()),
     path('users/', UserView.as_view(), name='users'),
-    path('login/', LoginAPIView.as_view(), name='login'),
     path('obtain_token/', obtain_jwt_token),
 ]
 
@@ -18,4 +17,7 @@ urlpatterns += [
 
 urlpatterns += [
     path('api-auth/', include('rest_framework.urls')),
+    path('rest-auth/', include('rest_auth.urls')),
+    path('password/reset/confirm/', PasswordResetConfirmView.as_view()),
+    path('', include('django.contrib.auth.urls')),
 ]
