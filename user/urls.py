@@ -2,6 +2,7 @@ from django.urls import path, include
 from .views import *
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework_simplejwt import views as jwt_views
+from rest_auth.views import PasswordResetConfirmView
 
 urlpatterns = [
     path('registration/', RegistrationAPIView.as_view(), name='registration'),
