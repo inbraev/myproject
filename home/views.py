@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from django.core.exceptions import ObjectDoesNotExist
 from .permissions import IsOwner
 from .serializers import *
+from rest_framework.pagination import PageNumberPagination
 
 
 class TypeView(generics.ListAPIView):
@@ -227,6 +228,7 @@ class ApartmentListView(generics.ListAPIView):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ApartmentFilter
     permission_classes = (permissions.AllowAny,)
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         return Apartment.objects.all().order_by("-pub_date")
@@ -395,3 +397,4 @@ class FrontApartmentListView(generics.ListAPIView):
     serializer_class = FrontApartmentsSerializer
     permission_classes = (permissions.AllowAny,)
     queryset = Apartment.objects.all().order_by('-pub_date')
+    pagination_class = PageNumberPagination

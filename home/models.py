@@ -247,8 +247,6 @@ class Apartment(models.Model):
             full_page = requests.get(DOLLAR_SOM, headers=headers)
             soup = BeautifulSoup(full_page.content, 'html.parser')
             convert = soup.findAll("h2")
-            print(self.currency)
-            print(type(self.currency))
             if str(self.currency) == '$':
                 self.another_price = round(float(convert[1].text) * float(self.price), 2)
             else:
