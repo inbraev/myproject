@@ -160,13 +160,13 @@ class PhotoDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ApartmentImage
-        fields = ('id', 'apartment','image',)
+        fields = ('id', 'apartment', 'image',)
 
 
 class ApartmentImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApartmentImage
-        fields = ('image','id')
+        fields = ('image', 'id')
 
 
 class uploadSerializer(serializers.HyperlinkedModelSerializer):
@@ -174,7 +174,7 @@ class uploadSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = ApartmentImage
-        fields = ('images', 'image','id')
+        fields = ('images', 'image', 'id')
 
     def create(self, validated_data):
         images_data = self.context.get('view').request.FILES
@@ -208,7 +208,7 @@ class PrettyApartmentSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'type', 'room', 'nearby_objects', 'floor', 'storey', 'area', 'series', 'title',
             'construction_type',
-            'state',
+            'state', 'status',
             'detail', 'objects_in_apartment', 'location', 'price', 'currency', 'another_price', 'preview_image',
             'description',
             'pub_date', 'apartment_image', 'contact', 'owner', 'comments', 'orders')
@@ -230,7 +230,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
         model = Apartment
         fields = ('id', 'type', 'room', 'floor', 'area', 'series', 'title', 'construction_type', 'state',
                   'detail', 'location', 'price', 'currency', 'another_price', 'preview_image',
-                  'description',
+                  'description', 'status',
                   'pub_date', 'storey', 'nearby_objects', 'objects_in_apartment', 'apartment_image', 'contact', 'owner',
                   'comments', 'orders')
 
@@ -385,3 +385,18 @@ class ChangeApartmentImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApartmentImage
         fields = ('id', 'apartment', 'image',)
+
+
+class FrontApartmentsSerializer(serializers.ModelSerializer):
+    location = Location2Serializer(many=False)
+    currency = serializers.CharField(source='currency.__str__')
+    preview_photo = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Apartment
+        fields = ('id', 'title', 'location', 'price', 'currency', 'another_price', 'preview_photo')
+
+    def get_preview_photo(self, obj):
+        preview_photo = obj.apartment_image.first()
+        serializer = uploadSerializer(preview_photo)
+        return serializer.data

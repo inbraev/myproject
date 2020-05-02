@@ -153,6 +153,16 @@ class ApartmentDetail(APIView):
     def get(self, request, pk, format=None):
         apartment = self.get_object(pk)
         current_user = request.user
+        for order in apartment.orders.all():
+            if date.today() == order.arrival_date:
+                apartment.status = False
+                break
+            elif date.today() >= order.departure_date:
+                apartment.status = True
+                order.delete()
+                break
+            apartment.save()
+
         if apartment.owner == current_user:
             serializer = ApartmentSerializer(apartment)
         else:
@@ -219,7 +229,7 @@ class ApartmentListView(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def get_queryset(self):
-        return Apartment.objects.filter(status=True).order_by("-pub_date")
+        return Apartment.objects.all().order_by("-pub_date")
 
 
 class CreateComment(generics.ListCreateAPIView):
@@ -304,6 +314,7 @@ class NearApartments(generics.ListAPIView):
         pk = self.kwargs['pk']
         from math import radians, cos, sin, asin, sqrt
         try:
+            import random
             current_apartment = Apartment.objects.get(id=pk)
             dist = 3  # дистанция 3 км радиуса
             mylon = current_apartment.location.longitude
@@ -313,10 +324,13 @@ class NearApartments(generics.ListAPIView):
             lat1 = mylat - (dist / 111.0)
             lat2 = mylat + (dist / 111.0)
             near_apartments = Apartment.objects.filter(location__latitude__range=(lat1, lat2)).filter(
-                location__longitude__range=(lon1, lon2)).exclude(id=pk)[:3]
+                location__longitude__range=(lon1, lon2)).exclude(id=pk)
             if not near_apartments:
                 raise NotFound("Рядом нет квартир")
-            return near_apartments
+            valid_profiles_id_list = list(near_apartments.values_list('id', flat=True))
+            random_apartments_id_list = random.sample(valid_profiles_id_list, min(len(valid_profiles_id_list), 3))
+            query_set = Apartment.objects.filter(id__in=random_apartments_id_list)
+            return query_set
         except ObjectDoesNotExist:
             raise NotFound('Квартира не найдена')
 
@@ -375,3 +389,9 @@ class PhotoUpdate(APIView):
         except ObjectDoesNotExist:
             raise NotFound("Фотография не найдена!")
         return Response(data="Вы успешно удалили фотографию")
+
+
+class FrontApartmentListView(generics.ListAPIView):
+    serializer_class = FrontApartmentsSerializer
+    permission_classes = (permissions.AllowAny,)
+    queryset = Apartment.objects.all().order_by('-pub_date')

@@ -34,6 +34,7 @@ urlpatterns = [
 
                   path('apartment/<int:pk>/', views.ApartmentDetail().as_view()),
                   path('apartments/', views.ApartmentListView().as_view()),
+                  path('front-apartments/', views.FrontApartmentListView().as_view()),
                   path('photo/<int:pk>/', views.PhotoUpdate().as_view()),
 
 
