@@ -391,10 +391,10 @@ class FrontApartmentsSerializer(serializers.ModelSerializer):
     location = Location2Serializer(many=False)
     currency = serializers.CharField(source='currency.__str__')
     preview_photo = serializers.SerializerMethodField()
-
+    owner = serializers.StringRelatedField()
     class Meta:
         model = Apartment
-        fields = ('id', 'title', 'location', 'price', 'currency', 'another_price', 'preview_photo')
+        fields = ('id', 'title', 'location', 'price', 'currency', 'another_price', 'preview_photo','owner')
 
     def get_preview_photo(self, obj):
         preview_photo = obj.apartment_image.first()
