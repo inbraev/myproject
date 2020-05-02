@@ -14,6 +14,18 @@ from .serializers import *
 from rest_framework.pagination import PageNumberPagination
 
 
+class FrontApartmentPagination(PageNumberPagination):
+    page_size = 12
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+
+class CommentPagination(PageNumberPagination):
+    page_size = 18
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+
 class TypeView(generics.ListAPIView):
     queryset = Type.objects.all()
     serializer_class = TypeSerializer
@@ -114,6 +126,7 @@ class CommentView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (permissions.AllowAny,)
+    pagination_class = CommentPagination
 
     def perform_create(self, serializer):
         if self.request.user.is_authenticated:
@@ -397,4 +410,6 @@ class FrontApartmentListView(generics.ListAPIView):
     serializer_class = FrontApartmentsSerializer
     permission_classes = (permissions.AllowAny,)
     queryset = Apartment.objects.all().order_by('-pub_date')
-    pagination_class = PageNumberPagination
+    pagination_class = FrontApartmentPagination
+
+
