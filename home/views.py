@@ -321,12 +321,12 @@ class UploadImage(generics.ListCreateAPIView):
     queryset = Apartment.objects.all()
 
 
-class NearbyObjectsListCreateView(generics.ListCreateAPIView):
+class NearbyObjectsListView(generics.ListAPIView):
     serializer_class = NearbyObjectsSerializer
     queryset = NearbyObjects.objects.all()
 
 
-class ObjectsInApartmentListCreateView(generics.ListCreateAPIView):
+class ObjectsInApartmentListView(generics.ListAPIView):
     serializer_class = ObjectsInApartmentSerializer
     queryset = ObjectsInApartment.objects.all()
 

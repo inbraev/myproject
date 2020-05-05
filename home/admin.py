@@ -13,6 +13,8 @@ admin.site.register(Area)
 admin.site.register(Detail)
 admin.site.register(Contact)
 admin.site.register(ApartmentImage)
+admin.site.register(NearbyObjects)
+admin.site.register(ObjectsInApartment)
 
 admin.site.register(Country)
 admin.site.register(Region)
