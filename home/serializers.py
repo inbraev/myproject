@@ -168,6 +168,18 @@ class ApartmentImageSerializer(serializers.ModelSerializer):
         model = ApartmentImage
         fields = ('image', 'id')
 
+class ObjectsInApartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ObjectsInApartment
+        fields = ('name',)
+
+
+class NearbyObjectsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NearbyObjects
+        fields = ('name', )
+
+
 
 class uploadSerializer(serializers.HyperlinkedModelSerializer):
     images = ApartmentImageSerializer(source='apartment_image', many=True, read_only=True)

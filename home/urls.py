@@ -36,6 +36,9 @@ urlpatterns = [
                   path('apartments/', views.ApartmentListView().as_view()),
                   path('front-apartments/', views.FrontApartmentListView().as_view()),
 
+                  path('nearby-objects/', views.NearbyObjectsListCreateView().as_view()),
+                  path('objects-in-apartment/', views.ObjectsInApartmentListCreateView().as_view()),
+
 
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

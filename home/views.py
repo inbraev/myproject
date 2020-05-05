@@ -321,6 +321,16 @@ class UploadImage(generics.ListCreateAPIView):
     queryset = Apartment.objects.all()
 
 
+class NearbyObjectsListCreateView(generics.ListCreateAPIView):
+    serializer_class = NearbyObjectsSerializer
+    queryset = NearbyObjects.objects.all()
+
+
+class ObjectsInApartmentListCreateView(generics.ListCreateAPIView):
+    serializer_class = ObjectsInApartmentSerializer
+    queryset = ObjectsInApartment.objects.all()
+
+
 class NearApartments(generics.ListAPIView):
     serializer_class = ApartmentsSerializer
     permission_classes = (permissions.AllowAny,)

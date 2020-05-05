@@ -92,6 +92,29 @@ class Country(models.Model):
         return self.name
 
 
+class ObjectsInApartment(models.Model):
+    name = models.CharField('В доме есть', max_length=100)
+
+    class Meta:
+        verbose_name = 'В доме есть'
+        verbose_name_plural = 'В доме есть'
+
+    def __str__(self):
+        return self.name
+
+
+class NearbyObjects(models.Model):
+    name = models.CharField('Рядом есть', max_length=100)
+
+    class Meta:
+        verbose_name = 'Рядом есть'
+        verbose_name_plural = 'Рядом есть'
+
+    def __str__(self):
+        return self.name
+
+
+
 class Region(models.Model):
     name = models.CharField('Регион', max_length=100)
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, verbose_name='Страна')
