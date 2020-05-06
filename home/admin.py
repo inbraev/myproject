@@ -3,21 +3,28 @@ from django.contrib.admin import ModelAdmin
 from django.contrib.auth.models import Group
 
 from .models import *
+from django.contrib.admin import AdminSite
 
-admin.site.register(Type)
-admin.site.register(Series)
-admin.site.register(Construction)
-admin.site.register(State)
-admin.site.register(Location)
-admin.site.register(Area)
-admin.site.register(Detail)
+
+class Moderator(AdminSite):
+    site_header = "Модератор Yourthome"
+    site_title = "Модератор"
+    index_title = "Добро пожаловать в Yourthome"
+
+
+moderator_site = Moderator(name='moderator')
+
 admin.site.register(Contact)
 admin.site.register(ApartmentImage)
 admin.site.register(NearbyObjects)
 admin.site.register(ObjectsInApartment)
-
-admin.site.register(Country)
+admin.site.register(Type)
+admin.site.register(Series)
+admin.site.register(Construction)
+admin.site.register(State)
 admin.site.register(Region)
+admin.site.register(Role)
+admin.site.register(Booking)
 
 admin.site.site_header = "YourtHome Admin"
 admin.site.site_title = "YourtHome Admin"
@@ -46,10 +53,11 @@ class ImageInline(admin.TabularInline):
 
 class ApartmentAdmin(ModelAdmin):
     fieldsets = (
-        ('Об объекте', {'fields': ['title', 'type', 'room', 'floor', 'storey', 'area', 'location', 'price', 'another_price',
-                                   'preview_image', 'pub_date', 'status']}),
+        ('Об объекте',
+         {'fields': ['title', 'type', 'room', 'floor', 'storey', 'area', 'location', 'price', 'another_price',
+                     'preview_image', 'pub_date', 'status']}),
         ('Характеристика', {'fields': ['series', 'construction_type', 'state', 'detail', 'nearby_objects',
-                                       'objects_in_apartment',   'description']}),
+                                       'objects_in_apartment', 'description']}),
         ('Контактная информация', {'fields': ['owner', 'contact']}),
     )
 
@@ -72,3 +80,6 @@ class ApartmentAdmin(ModelAdmin):
 
 
 admin.site.register(Apartment, ApartmentAdmin)
+moderator_site.register(Apartment, ApartmentAdmin)
+moderator_site.register(ApartmentImage)
+moderator_site.register(Comment)
