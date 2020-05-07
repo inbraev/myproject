@@ -275,7 +275,7 @@ class Apartment(models.Model):
             else:
                 self.another_price = round(float(self.price) / float(convert[1].text), 2)
         except:
-            self.another_price = 0
+            super(Apartment, self).save(*args, **kwargs)
         finally:
             super(Apartment, self).save(*args, **kwargs)
 
