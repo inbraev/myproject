@@ -272,7 +272,7 @@ class Apartment(models.Model):
             convert = soup.findAll("h2")
             if str(self.currency) == '$':
                 self.another_price = round(float(convert[1].text) * float(self.price), 2)
-            else:
+            elif str(self.currency) == 'сом':
                 self.another_price = round(float(self.price) / float(convert[1].text), 2)
         except:
             super(Apartment, self).save(*args, **kwargs)
