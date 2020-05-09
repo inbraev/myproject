@@ -249,7 +249,10 @@ class ApartmentFilter(filters.FilterSet):
 
         for order in Booking.objects.all():
             if order.apartment is not None:
-                if (arrival_date < order.arrival_date and departure_date > order.arrival_date) or (arrival_date < order.arrival_date and departure_date > order.departure_date) or (arrival_date < order.departure_date and departure_date > order.departure_date) or (arrival_date > order.arrival_date and departure_date < order.departure_date):
+                if (arrival_date <= order.arrival_date and departure_date >= order.arrival_date) or \
+                        (arrival_date <= order.arrival_date and departure_date >= order.departure_date) or \
+                        (arrival_date <= order.departure_date and departure_date >= order.departure_date) or \
+                        (arrival_date >= order.arrival_date and departure_date <= order.departure_date):
 
                     banned.append(order.apartment.id)
 
