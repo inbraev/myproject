@@ -84,7 +84,8 @@ admin.site.register(Apartment, ApartmentAdmin)
 
 class CommentAdmin(ModelAdmin):
     search_fields = ['name_of_publication', ]
-    list_display = ('name_of_publication',)
+    readonly_fields = ('apartment','name_of_publication','owner',)
+    fields = ('apartment','name_of_publication','owner',)
 
 
 moderator_site.register(Apartment, ApartmentAdmin)
