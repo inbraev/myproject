@@ -216,24 +216,48 @@ class ApartmentDetail(APIView):
             return Response(data="У вас нет прав удалять данный объект недвижимости")
 
 
+from django.db.models import Q
+import datetime
+
+
 class ApartmentFilter(filters.FilterSet):
     min_price = filters.NumberFilter(field_name='price', lookup_expr='gte')
     max_price = filters.NumberFilter(field_name='price', lookup_expr='lte')
-    arrival_date = filters.DateFilter(field_name='orders__departure_date', lookup_expr='gt')
-    departure_date = filters.DateFilter(field_name='orders__arrival_date', lookup_expr='lt')
     min_area = filters.NumberFilter(field_name='area__total_area', lookup_expr='gte')
     max_area = filters.NumberFilter(field_name='area__total_area', lookup_expr='lte')
     objects_in_apartment = filters.CharFilter(lookup_expr='icontains')
     nearby_objects = filters.CharFilter(lookup_expr='icontains')
+    booking = filters.CharFilter(method='filter_by_date',label='Дата заезда - дата выезда')
 
     class Meta:
         model = Apartment
-        fields = ['location__region', 'location__city', 'location__district', 'type', 'room', 'floor',
+        fields = ['booking', 'location__region', 'location__city', 'location__district', 'type', 'room', 'floor',
                   'construction_type', 'state',
-                  'min_price', 'max_price', 'currency', 'arrival_date', 'departure_date', 'min_area', 'max_area',
+                  'min_price', 'max_price', 'currency',   'min_area', 'max_area',
                   'objects_in_apartment', 'nearby_objects',
-                  'detail__internet', 'detail__furniture', 'detail__heat', 'detail__gas',
-                  'detail__phone', 'detail__parking', 'detail__elevator', 'detail__security']
+                   ]
+
+    def filter_by_date(self, queryset, name, value):
+
+        dates = value.split()  # Получаем с фронта две даты как строку и разбиваем ее в лист
+        arrival_date = datetime.datetime.strptime(dates[0],
+                                                  '%Y-%m-%d').date()  # это дата прибытия, конвертируем ее в date
+        departure_date = datetime.datetime.strptime(dates[1],
+                                                    '%Y-%m-%d').date()  # это дата отбытия, конвертируем ее в date
+
+        banned = [] # квартиры которые имеют бронь
+
+        for order in Booking.objects.all():
+            if (arrival_date < order.arrival_date and departure_date > order.arrival_date) or (arrival_date < order.arrival_date and departure_date > order.departure_date) or (arrival_date < order.departure_date and departure_date > order.departure_date) or (arrival_date > order.arrival_date and departure_date < order.departure_date):
+
+                banned.append(order.apartment.id)
+
+
+
+        queryset = Apartment.objects.exclude(id__in=banned)
+
+        return queryset
+
 
 
 class ApartmentListView(generics.ListAPIView):
@@ -421,5 +445,3 @@ class FrontApartmentListView(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
     queryset = Apartment.objects.all().order_by('-pub_date')
     pagination_class = FrontApartmentPagination
-
-
