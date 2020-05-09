@@ -80,6 +80,13 @@ class ApartmentAdmin(ModelAdmin):
 
 
 admin.site.register(Apartment, ApartmentAdmin)
+
+
+class CommentAdmin(ModelAdmin):
+    search_fields = ['name_of_publication', ]
+    list_display = ('name_of_publication',)
+
+
 moderator_site.register(Apartment, ApartmentAdmin)
 moderator_site.register(ApartmentImage)
-moderator_site.register(Comment)
+moderator_site.register(Comment, CommentAdmin)
